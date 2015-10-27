@@ -24,7 +24,6 @@
 package com.opentangerine.clean;
 
 import com.jcabi.log.Logger;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -34,23 +33,28 @@ import java.nio.file.Paths;
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
  */
-public final class Clean {
+@SuppressWarnings("PMD.DoNotUseThreads")
+public final class Clean implements Runnable {
+
+    /**
+     * Cleaning mode.
+     */
+    private final transient Mode mode;
+
+    /**
+     * Working path.
+     */
+    private final transient Path path;
 
     /**
      * Clean application.
      *
-     * @param path Working directory.
-     * @param args Execution arguments.
+     * @param cpath Working directory.
+     * @param cargs Execution arguments.
      */
-    public Clean(Path path, final String... args) {
-        final Console console = new Console();
-        final Mode mode = new Mode(args);
-        final Delete delete = new Delete(mode);
-        console.help();
-        if(path.resolve("pom.xml").toFile().exists()) {
-            delete.directory(path.resolve("target"));
-        }
-        Logger.debug(this, "Finished.");
+    public Clean(final Path cpath, final String... cargs) {
+        this.mode = new Mode(cargs);
+        this.path = cpath;
     }
 
     /**
@@ -62,4 +66,13 @@ public final class Clean {
         new Clean(Paths.get(System.getProperty("user.dir")), args);
     }
 
+    @Override
+    public void run() {
+        final Delete delete = new Delete(this.mode);
+        new Console().help();
+        if (this.path.resolve("pom.xml").toFile().exists()) {
+            delete.directory(this.path.resolve("target"));
+        }
+        Logger.debug(this, "Finished.");
+    }
 }

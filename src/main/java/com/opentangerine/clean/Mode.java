@@ -36,32 +36,35 @@ public final class Mode {
     /**
      * Readonly flag.
      */
-    private boolean readonly = true;
+    private final transient boolean readonly;
 
     /**
      * Cleaning mode.
      *
      * @param args Execution arguments.
      */
-    public Mode(final String[] args) {
-        String arguments = StringUtils.replaceChars(StringUtils.join(args), "- ", "");
-        for (int i = 0; i < arguments.length(); i++) {
-            char arg = arguments.charAt(i);
-            if('d' == arg) {
-                readonly = false;
-            } else if('r' == arg) {
-                throw new NotImplementedException("Recurrence mode not supported yet");
-            } else {
-                throw new IllegalArgumentException(String.format("Unrecognized argument '%s'", arg));
-            }
+    public Mode(final String... args) {
+        final String arguments = StringUtils.replaceChars(
+            StringUtils.join(args), "- ", ""
+        );
+        this.readonly = !arguments.contains("d");
+        if (arguments.contains("r")) {
+            throw new NotImplementedException(
+                "Recurrence mode not supported yet"
+            );
+        }
+        if (StringUtils.replaceChars(arguments, "dr", "").length() > 0) {
+            throw new IllegalArgumentException(
+                String.format("Unrecognized argument '%s'", arguments)
+            );
         }
     }
 
     /**
      * Cleanup mode.
-     * @return true if in readonly mode
+     * @return True if in readonly mode
      */
-    public boolean readonly() {
-        return readonly;
+    public boolean isReadonly() {
+        return this.readonly;
     }
 }

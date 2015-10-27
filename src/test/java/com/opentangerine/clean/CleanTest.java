@@ -23,15 +23,14 @@
  */
 package com.opentangerine.clean;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Paths;
 
 /**
  * This is test suit for {@link Clean} class.
@@ -41,39 +40,58 @@ import java.nio.file.Paths;
  */
 public final class CleanTest {
 
+    /**
+     * Temporary dir.
+     */
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public transient TemporaryFolder folder = new TemporaryFolder();
 
     /**
      * Confirms that application is running without exceptions.
      */
     @Test(expected = IllegalArgumentException.class)
     public void unrecognizedArgument() {
-        Clean.main("incorrect argument");
+        Clean.main("z");
     }
 
+    /**
+     * Check how clean is working in default mode.
+     */
     @Test
-    public void isNotDeletingByDefault() throws IOException, InterruptedException {
-        this.createMavenProject();
-        final File target = Paths.get(folder.getRoot().toURI()).resolve("target").toFile();
+    public void isNotDeletingByDefault() {
+        final File target = this.createMavenProject();
         MatcherAssert.assertThat(target.isDirectory(), Matchers.is(true));
-        new Clean(Paths.get(folder.getRoot().toURI()), "");
+        new Clean(Paths.get(this.folder.getRoot().toURI()), "").run();
         MatcherAssert.assertThat(target.isDirectory(), Matchers.is(true));
     }
 
+    /**
+     * Check how clean is working in delete mode.
+     */
     @Test
-    public void deleteTargetDirectoryForMavenProject() throws IOException, InterruptedException {
-        this.createMavenProject();
-        final File target = Paths.get(folder.getRoot().toURI()).resolve("target").toFile();
+    public void deleteTargetDirectoryForMavenProject() {
+        final File target = this.createMavenProject();
         MatcherAssert.assertThat(target.isDirectory(), Matchers.is(true));
-        new Clean(Paths.get(folder.getRoot().toURI()), "-d");
+        new Clean(Paths.get(this.folder.getRoot().toURI()), "-d").run();
         MatcherAssert.assertThat(target.isDirectory(), Matchers.is(false));
     }
 
-    private void createMavenProject() throws IOException {
-        folder.newFolder("target");
-        folder.newFile("target/file.txt");
-        folder.newFile("pom.xml");
-        folder.newFile("target/file2.txt");
+    /**
+     * Creates maven project structure.
+     * @return Target directory of maven project.
+     */
+    private File createMavenProject() {
+        try {
+            final File target = this.folder.newFolder("target");
+            this.folder.newFile("target/file.txt");
+            this.folder.newFile("pom.xml");
+            this.folder.newFile("target/file2.txt");
+            return target;
+        } catch (final IOException exc) {
+            throw new IllegalStateException(
+                "Unable to create maven project structure",
+                exc
+            );
+        }
     }
 }
