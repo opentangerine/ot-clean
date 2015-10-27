@@ -23,7 +23,15 @@
  */
 package com.opentangerine.clean;
 
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 
 /**
  * This is test suit for {@link Clean} class.
@@ -33,11 +41,39 @@ import org.junit.Test;
  */
 public final class CleanTest {
 
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
+
     /**
      * Confirms that application is running without exceptions.
      */
+    @Test(expected = IllegalArgumentException.class)
+    public void unrecognizedArgument() {
+        Clean.main("incorrect argument");
+    }
+
     @Test
-    public void noExceptionOnStartup() {
-        Clean.main("arg1");
+    public void isNotDeletingByDefault() throws IOException, InterruptedException {
+        this.createMavenProject();
+        final File target = Paths.get(folder.getRoot().toURI()).resolve("target").toFile();
+        MatcherAssert.assertThat(target.isDirectory(), Matchers.is(true));
+        new Clean(Paths.get(folder.getRoot().toURI()), "");
+        MatcherAssert.assertThat(target.isDirectory(), Matchers.is(true));
+    }
+
+    @Test
+    public void deleteTargetDirectoryForMavenProject() throws IOException, InterruptedException {
+        this.createMavenProject();
+        final File target = Paths.get(folder.getRoot().toURI()).resolve("target").toFile();
+        MatcherAssert.assertThat(target.isDirectory(), Matchers.is(true));
+        new Clean(Paths.get(folder.getRoot().toURI()), "-d");
+        MatcherAssert.assertThat(target.isDirectory(), Matchers.is(false));
+    }
+
+    private void createMavenProject() throws IOException {
+        folder.newFolder("target");
+        folder.newFile("target/file.txt");
+        folder.newFile("pom.xml");
+        folder.newFile("target/file2.txt");
     }
 }

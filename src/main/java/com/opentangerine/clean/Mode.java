@@ -23,43 +23,45 @@
  */
 package com.opentangerine.clean;
 
-import com.jcabi.log.Logger;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 
 /**
- * This is initial class, should be changed to something else.
+ * Cleaning mode.
  *
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
  */
-public final class Clean {
+public final class Mode {
+    /**
+     * Readonly flag.
+     */
+    private boolean readonly = true;
 
     /**
-     * Clean application.
+     * Cleaning mode.
      *
-     * @param path Working directory.
      * @param args Execution arguments.
      */
-    public Clean(Path path, final String... args) {
-        final Console console = new Console();
-        final Mode mode = new Mode(args);
-        final Delete delete = new Delete(mode);
-        console.help();
-        if(path.resolve("pom.xml").toFile().exists()) {
-            delete.directory(path.resolve("target"));
+    public Mode(final String[] args) {
+        String arguments = StringUtils.replaceChars(StringUtils.join(args), "- ", "");
+        for (int i = 0; i < arguments.length(); i++) {
+            char arg = arguments.charAt(i);
+            if('d' == arg) {
+                readonly = false;
+            } else if('r' == arg) {
+                throw new NotImplementedException("Recurrence mode not supported yet");
+            } else {
+                throw new IllegalArgumentException(String.format("Unrecognized argument '%s'", arg));
+            }
         }
-        Logger.debug(this, "Finished.");
     }
 
     /**
-     * Entry point of application.
-     *
-     * @param args Application arguments.
+     * Cleanup mode.
+     * @return true if in readonly mode
      */
-    public static void main(final String... args) {
-        new Clean(Paths.get(System.getProperty("user.dir")), args);
+    public boolean readonly() {
+        return readonly;
     }
-
 }
