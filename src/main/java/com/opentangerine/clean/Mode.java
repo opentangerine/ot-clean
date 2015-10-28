@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
  */
+@SuppressWarnings("PMD.BooleanInversion")
 public final class Mode {
     /**
      * Readonly flag.
