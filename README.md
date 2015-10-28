@@ -13,11 +13,14 @@ to your `path`. You might want to read also [How to efficiently manage PATH vari
 #### Run
 
 Go to directory you want to clean and type:
-```ot-clean```
+
+```
+ot-clean
+```
 
 ## Roadmap
 
-0.1 - Clean maven project in current directory without using maven
-0.2 - Recurrence parameter `r`
-0.3 - Support for cleanup supressing for specific directories
-0.4 - Customise which directories should be included during cleaning process.
+* 0.1 - Clean maven project in current directory without using maven
+* 0.2 - Recurrence parameter `r`
+* 0.3 - Support for cleanup supressing for specific directories
+* 0.4 - Customise which directories should be included during cleaning process.
