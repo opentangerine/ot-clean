@@ -55,6 +55,7 @@ public final class Clean implements Runnable {
     public Clean(final Path cpath, final String... cargs) {
         this.mode = new Mode(cargs);
         this.path = cpath;
+        Logger.info(this, cpath.toString());
     }
 
     /**
@@ -63,7 +64,7 @@ public final class Clean implements Runnable {
      * @param args Application arguments.
      */
     public static void main(final String... args) {
-        new Clean(Paths.get(System.getProperty("user.dir")), args);
+        new Clean(Paths.get(System.getProperty("user.dir")), args).run();
     }
 
     @Override
