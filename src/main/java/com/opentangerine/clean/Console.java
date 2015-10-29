@@ -53,6 +53,7 @@ public final class Console {
                 IOUtils.toString(getClass().getResourceAsStream(path))
             );
             this.out.println();
+            this.out.flush();
         } catch (final IOException exc) {
             throw new IllegalArgumentException(
                 "Unable to file readme file", exc
