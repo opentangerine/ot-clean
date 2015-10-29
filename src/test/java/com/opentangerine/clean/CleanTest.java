@@ -66,6 +66,14 @@ public final class CleanTest {
     }
 
     /**
+     * Check how clean is working on random directory.
+     */
+    @Test
+    public void noExceptionOnEmptyDir() {
+        new Clean(Paths.get(this.folder.getRoot().toURI()), "").run();
+    }
+
+    /**
      * Check how clean is working in delete mode.
      */
     @Test

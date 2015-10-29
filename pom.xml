@@ -138,14 +138,13 @@
                         <artifactId>cobertura-maven-plugin</artifactId>
                         <configuration>
                             <check>
-                                <!-- FIXME GG: increase branch coverage to 80%-->
                                 <haltOnFailure>true</haltOnFailure>
-                                <branchRate>50</branchRate>
-                                <lineRate>50</lineRate>
-                                <packageBranchRate>50</packageBranchRate>
-                                <packageLineRate>50</packageLineRate>
-                                <totalBranchRate>50</totalBranchRate>
-                                <totalLineRate>50</totalLineRate>
+                                <branchRate>80</branchRate>
+                                <lineRate>80</lineRate>
+                                <packageBranchRate>80</packageBranchRate>
+                                <packageLineRate>80</packageLineRate>
+                                <totalBranchRate>80</totalBranchRate>
+                                <totalLineRate>80</totalLineRate>
                             </check>
                         </configuration>
                         <executions>
