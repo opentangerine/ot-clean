@@ -18,6 +18,12 @@
         <jdk.version>1.8</jdk.version>
     </properties>
 
+    <scm>
+        <url>https://github.com/ggajos/ot-clean</url>
+        <connection>scm:git:https://github.com/ggajos/ot-clean.git</connection>
+        <developerConnection>scm:git:https://github.com/ggajos/ot-clean.git</developerConnection>
+    </scm>
+
     <dependencies>
         <dependency>
             <groupId>com.jcabi</groupId>
@@ -41,16 +47,9 @@
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Main-Class>com.opentangerine.clean.Clean</Main-Class>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
                 <executions>
                     <execution>
-                        <id>assemble-all</id>
+                        <id>jar-with-dependencies</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
@@ -59,25 +58,25 @@
                             <descriptorRefs>
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
+                            <archive>
+                                <manifest>
+                                    <mainClass>com.opentangerine.clean.Clean</mainClass>
+                                </manifest>
+                            </archive>
+                            <finalName>ot-clean</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                     </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.gmaven</groupId>
-                <artifactId>groovy-maven-plugin</artifactId>
-                <executions>
                     <execution>
+                        <id>dist</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>execute</goal>
+                            <goal>single</goal>
                         </goals>
                         <configuration>
-                            <properties>
-                                <basedir>${project.basedir}</basedir>
-                                <file>${project.build.finalName}</file>
-                            </properties>
-                            <source>${project.basedir}/src/main/script/package.groovy</source>
+                            <descriptors>
+                                <descriptor>src/main/assembly/zip.xml</descriptor>
+                            </descriptors>
                         </configuration>
                     </execution>
                 </executions>
@@ -110,22 +109,22 @@
                 </configuration>
             </plugin>
             <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.6</version>
+                <groupId>de.jutzig</groupId>
+                <artifactId>github-release-plugin</artifactId>
+                <version>1.1.1</version>
                 <configuration>
-                    <descriptors>
-                        <descriptor>src/main/assembly/zip.xml</descriptor>
-                    </descriptors>
+                    <description>ot-clean ${project.version}, see readme.md for more information</description>
+                    <releaseName>ot-clean ${project.version}</releaseName>
+                    <tag>${project.version}</tag>
+                    <fileSets>
+                        <fileSet>
+                            <directory>${project.build.directory}</directory>
+                            <includes>
+                                <include>${project.artifactId}*.zip</include>
+                            </includes>
+                        </fileSet>
+                    </fileSets>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
