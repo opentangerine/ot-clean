@@ -2,3 +2,8 @@ ot-clean
 
 -d      - By default no directories are going to be deleted. You have to provide this argument
           if you really want to delete them.
+-r      - By default application is going to clean garbage from current
+          directory only. If you want to search nested directories, use -r
+
+Example usage:
+ot-clean -dr
