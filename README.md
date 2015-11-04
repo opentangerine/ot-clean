@@ -1,3 +1,8 @@
+## Status
+
+[![Build Status](https://travis-ci.org/ggajos/ot-clean.svg?branch=master)](https://travis-ci.org/ggajos/ot-clean)
+[![Coverage Status](https://coveralls.io/repos/ggajos/ot-clean/badge.svg?branch=master&service=github)](https://coveralls.io/github/ggajos/ot-clean?branch=master)
+
 ## Motivation
 
 If you are working on multiple projects you probably encounter fact that lots
