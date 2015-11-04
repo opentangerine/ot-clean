@@ -24,8 +24,10 @@
 package com.opentangerine.clean;
 
 import com.jcabi.log.Logger;
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 /**
  * This is initial class, should be changed to something else.
@@ -53,7 +55,17 @@ public final class Clean implements Runnable {
      * @param cargs Execution arguments.
      */
     public Clean(final Path cpath, final String... cargs) {
-        this.mode = new Mode(cargs);
+        this(cpath, new Mode(cargs));
+    }
+
+    /**
+     * Ctor.
+     *
+     * @param cpath Working directory.
+     * @param cmode Mode.
+     */
+    public Clean(final Path cpath, final Mode cmode) {
+        this.mode = cmode;
         this.path = cpath;
         Logger.info(this, cpath.toString());
     }
@@ -64,15 +76,20 @@ public final class Clean implements Runnable {
      * @param args Application arguments.
      */
     public static void main(final String... args) {
+        new Console().help();
         new Clean(Paths.get(System.getProperty("user.dir")), args).run();
     }
 
     @Override
     public void run() {
         final Delete delete = new Delete(this.mode);
-        new Console().help();
         if (this.path.resolve("pom.xml").toFile().exists()) {
             delete.directory(this.path.resolve("target"));
+        }
+        if (this.mode.recurrence()) {
+            Arrays
+                .stream(this.path.toFile().listFiles(File::isDirectory))
+                .forEach(it -> new Clean(it.toPath(), this.mode).run());
         }
         Logger.debug(this, "Finished.");
     }
