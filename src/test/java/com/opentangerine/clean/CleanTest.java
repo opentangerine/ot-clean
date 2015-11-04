@@ -47,14 +47,6 @@ public final class CleanTest {
     public transient TemporaryFolder folder = new TemporaryFolder();
 
     /**
-     * Confirms that application is running without exceptions.
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void unrecognizedArgument() {
-        Clean.main("z");
-    }
-
-    /**
      * Check how clean is working in default mode.
      */
     @Test

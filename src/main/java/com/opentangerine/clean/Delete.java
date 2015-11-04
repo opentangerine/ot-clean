@@ -52,7 +52,7 @@ public final class Delete {
      * @param path Path.
      */
     public void directory(final Path path) {
-        if (this.mode.isReadonly()) {
+        if (this.mode.readonly()) {
             Logger.info(this, "Directory '%s' can be deleted.", path);
         } else {
             Logger.info(this, "Deleting '%s'", path);
