@@ -4,3 +4,5 @@ cache:
     - $HOME/.m2
 script:
   - mvn clean install -Pqulice,cobertura --errors
+jdk:
+  - oraclejdk8
