@@ -23,53 +23,38 @@
  */
 package com.opentangerine.clean;
 
-import org.apache.commons.lang3.StringUtils;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
 /**
- * Cleaning mode.
+ * This is test suit for {@link Mode} class.
  *
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
  */
-@SuppressWarnings("PMD.BooleanInversion")
-public final class Mode {
-    /**
-     * Readonly flag.
-     */
-    private final transient String[] arguments;
+public final class ModeTest {
 
     /**
-     * Cleaning mode.
-     *
-     * @param args Execution arguments.
+     * Mode can recognize single arguments.
+     * @throws Exception
      */
-    public Mode(final String... args) {
-        this.arguments = args;
+    @Test
+    public void canRecognizeSingleArguments() {
+        MatcherAssert.assertThat(new Mode("d").readonly(), Matchers.is(false));
+        MatcherAssert.assertThat(new Mode("r").recurrence(), Matchers.is(true));
+        MatcherAssert.assertThat(new Mode().readonly(), Matchers.is(true));
+        MatcherAssert.assertThat(new Mode().recurrence(), Matchers.is(false));
     }
 
     /**
-     * Cleanup mode.
-     * @return True if in readonly mode
+     * Mode can recognize single arguments.
+     * @throws Exception
      */
-    public boolean readonly() {
-        return !this.concat().contains("d");
-    }
-
-    /**
-     * Is recurrence mode.
-     * @return True if recurrence
-     */
-    public boolean recurrence() {
-        return this.concat().contains("r");
-    }
-
-    /**
-     * Combine all arguments and remove dash.
-     * @return Arguments as plain string.
-     */
-    private String concat() {
-        return StringUtils.replaceChars(
-            StringUtils.join(this.arguments), "- ", ""
-        );
+    @Test
+    public void canRecognizeCombinedArguments() {
+        final Mode mode = new Mode("-dr");
+        MatcherAssert.assertThat(mode.readonly(), Matchers.is(false));
+        MatcherAssert.assertThat(mode.recurrence(), Matchers.is(true));
     }
 }

@@ -1,3 +1,8 @@
+## Status
+
+[![Build Status](https://travis-ci.org/ggajos/ot-clean.svg?branch=master)](https://travis-ci.org/ggajos/ot-clean)
+[![Coverage Status](https://coveralls.io/repos/ggajos/ot-clean/badge.svg?branch=master&service=github)](https://coveralls.io/github/ggajos/ot-clean?branch=master)
+
 ## Motivation
 
 If you are working on multiple projects you probably encounter fact that lots
@@ -12,7 +17,8 @@ to your `path`. You might want to read also [How to efficiently manage PATH vari
 
 #### Run
 
-Go to directory you want to clean and type:
+Go to directory you want to clean and type. No worries, by default it is going to
+display only information what could be cleaned up. No data will be lost.
 
 ```
 ot-clean
@@ -20,7 +26,7 @@ ot-clean
 
 ## Roadmap
 
-* 0.1 - Clean maven project in current directory without using maven
-* 0.2 - Recurrence parameter `r`
+* ✓ 0.1 - Clean maven project in current directory without using maven
+* ✓ 0.2 - Recurrence parameter `r`
 * 0.3 - Support for cleanup supressing for specific directories
 * 0.4 - Customise which directories should be included during cleaning process.

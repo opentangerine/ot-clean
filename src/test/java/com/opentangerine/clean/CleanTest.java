@@ -23,9 +23,10 @@
  */
 package com.opentangerine.clean;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import org.apache.commons.io.FileUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Rule;
@@ -47,22 +48,20 @@ public final class CleanTest {
     public transient TemporaryFolder folder = new TemporaryFolder();
 
     /**
-     * Confirms that application is running without exceptions.
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void unrecognizedArgument() {
-        Clean.main("z");
-    }
-
-    /**
      * Check how clean is working in default mode.
      */
     @Test
     public void isNotDeletingByDefault() {
-        final File target = this.createMavenProject();
-        MatcherAssert.assertThat(target.isDirectory(), Matchers.is(true));
+        final Path target = this.createMavenAndGetTarget();
+        MatcherAssert.assertThat(
+            target.toFile().isDirectory(),
+            Matchers.is(true)
+        );
         new Clean(Paths.get(this.folder.getRoot().toURI()), "").run();
-        MatcherAssert.assertThat(target.isDirectory(), Matchers.is(true));
+        MatcherAssert.assertThat(
+            target.toFile().isDirectory(),
+            Matchers.is(true)
+        );
     }
 
     /**
@@ -70,6 +69,7 @@ public final class CleanTest {
      */
     @Test
     public void noExceptionOnEmptyDir() {
+        new Console().help();
         new Clean(Paths.get(this.folder.getRoot().toURI()), "").run();
     }
 
@@ -78,23 +78,57 @@ public final class CleanTest {
      */
     @Test
     public void deleteTargetDirectoryForMavenProject() {
-        final File target = this.createMavenProject();
-        MatcherAssert.assertThat(target.isDirectory(), Matchers.is(true));
+        final Path target = this.createMavenAndGetTarget();
+        MatcherAssert.assertThat(
+            target.toFile().isDirectory(),
+            Matchers.is(true)
+        );
         new Clean(Paths.get(this.folder.getRoot().toURI()), "-d").run();
-        MatcherAssert.assertThat(target.isDirectory(), Matchers.is(false));
+        MatcherAssert.assertThat(
+            target.toFile().isDirectory(),
+            Matchers.is(false)
+        );
+    }
+
+    /**
+     * Check how clean is working in delete mode.
+     */
+    @Test
+    public void deleteTargetSubdirForMavenProject() {
+        final Path root = this.createMavenProject();
+        final String subTarget = "subdir/target";
+        MatcherAssert.assertThat(
+            root.resolve(subTarget).toFile().isDirectory(),
+            Matchers.is(true)
+        );
+        new Clean(Paths.get(this.folder.getRoot().toURI()), "dr").run();
+        MatcherAssert.assertThat(
+            root.resolve(subTarget).toFile().isDirectory(),
+            Matchers.is(false)
+        );
+    }
+
+    /**
+     * Create simple maven repo and get target dir.
+     * @return Target directory.
+     */
+    private Path createMavenAndGetTarget() {
+        return this.createMavenProject().resolve("target");
     }
 
     /**
      * Creates maven project structure.
-     * @return Target directory of maven project.
+     * @return Temp directory of maven project.
      */
-    private File createMavenProject() {
+    private Path createMavenProject() {
         try {
-            final File target = this.folder.newFolder("target");
-            this.folder.newFile("target/file.txt");
-            this.folder.newFile("pom.xml");
-            this.folder.newFile("target/file2.txt");
-            return target;
+            final Path root = this.folder.getRoot().toPath();
+            FileUtils.touch(root.resolve("pom.xml").toFile());
+            FileUtils.touch(root.resolve("target/file.txt").toFile());
+            FileUtils.touch(root.resolve("target/file2.txt").toFile());
+            FileUtils.touch(root.resolve("subdir/target/file2.txt").toFile());
+            FileUtils.touch(root.resolve("subdir/pom.xml").toFile());
+            return root;
         } catch (final IOException exc) {
             throw new IllegalStateException(
                 "Unable to create maven project structure",
