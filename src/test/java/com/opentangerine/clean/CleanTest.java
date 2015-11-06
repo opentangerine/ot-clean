@@ -69,6 +69,7 @@ public final class CleanTest {
      */
     @Test
     public void noExceptionOnEmptyDir() {
+        new Console().help();
         new Clean(Paths.get(this.folder.getRoot().toURI()), "").run();
     }
 
