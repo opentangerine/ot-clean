@@ -23,51 +23,78 @@
  */
 package com.opentangerine.clean;
 
-import com.jcabi.log.Logger;
 import java.io.File;
 import java.nio.file.Path;
-import org.apache.commons.io.FileUtils;
 
 /**
- * Class responsible for all delete operations.
+ * This is initial class, should be changed to something else.
  *
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
  */
-public final class Delete {
-    /**
-     * Clean mode.
-     */
-    private final transient Mode mode;
+public interface Cleanable {
 
     /**
-     * Ctor.
-     * @param cmode Clean mode.
+     * Clean.
+     *
+     * @param path Working directory.
      */
-    public Delete(final Mode cmode) {
-        this.mode = cmode;
-    }
+    void clean(final Path path);
 
     /**
-     * Deletes file/dir under given path.
-     * @param path Path.
+     * Cleanup maven structure.
      */
-    public void file(final Path path) {
-        this.file(path.toFile());
-    }
+    final class Maven implements Cleanable {
 
-    /**
-     * Deletes file/dir under given path.
-     * @param file File.
-     */
-    public void file(final File file) {
-        if (file.exists()) {
-            if (this.mode.readonly()) {
-                Logger.info(this, "Directory '%s' can be deleted.", file);
-            } else {
-                Logger.info(this, "Deleting '%s'", file);
-                FileUtils.deleteQuietly(file);
+        /**
+         * Delete operation.
+         */
+        private final Delete delete;
+
+        /**
+         * Ctor.
+         * @param mode Mode.
+         */
+        public Maven(final Mode mode) {
+            this.delete = new Delete(mode);
+        }
+
+        @Override
+        public void clean(final Path path) {
+            if (path.resolve("pom.xml").toFile().exists()) {
+                this.delete.file(path.resolve("target"));
             }
         }
+    }
+
+    /**
+     * Cleanup using yaml configuration file.
+     */
+    final class Yclean implements Cleanable {
+
+        /**
+         * Delete operation.
+         */
+        private final Delete delete;
+
+        /**
+         * Ctor.
+         * @param mode Mode.
+         */
+        public Yclean(final Mode mode) {
+            this.delete = new Delete(mode);
+        }
+
+        @Override
+        public void clean(final Path path) {
+            final File file = path.resolve(".clean.yml").toFile();
+            if (file.exists()) {
+                Yconfig
+                    .load(file)
+                    .filesToDelete(path)
+                    .forEach(this.delete::file);
+            }
+        }
+
     }
 }

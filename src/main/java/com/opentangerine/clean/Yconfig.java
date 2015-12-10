@@ -23,51 +23,69 @@
  */
 package com.opentangerine.clean;
 
-import com.jcabi.log.Logger;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
+import org.yaml.snakeyaml.Yaml;
 
 /**
- * Class responsible for all delete operations.
+ * Clean configuration file.
  *
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
  */
-public final class Delete {
-    /**
-     * Clean mode.
-     */
-    private final transient Mode mode;
+public final class Yconfig {
 
     /**
-     * Ctor.
-     * @param cmode Clean mode.
+     * List of paths to delete.
      */
-    public Delete(final Mode cmode) {
-        this.mode = cmode;
+    private transient List<String> deletes = Collections.emptyList();
+
+    /**
+     * Setter. This method is used by Yaml mapper only.
+     * @param sdeletes Values.
+     */
+    public void setDeletes(final List<String> sdeletes) {
+        this.deletes = sdeletes;
     }
 
     /**
-     * Deletes file/dir under given path.
-     * @param path Path.
+     * Files to delete.
+     *
+     * @param path Working directory.
+     * @return Stream of files.
      */
-    public void file(final Path path) {
-        this.file(path.toFile());
+    public Stream<Path> filesToDelete(final Path path) {
+        return this.deletes.stream().map(it -> path.resolve(it));
     }
 
     /**
-     * Deletes file/dir under given path.
+     * Load config from file.
+     *
      * @param file File.
+     * @return Config Object.
      */
-    public void file(final File file) {
-        if (file.exists()) {
-            if (this.mode.readonly()) {
-                Logger.info(this, "Directory '%s' can be deleted.", file);
-            } else {
-                Logger.info(this, "Deleting '%s'", file);
-                FileUtils.deleteQuietly(file);
-            }
+    public static Yconfig load(final File file) {
+        try {
+            return Optional.ofNullable(
+                new Yaml().loadAs(
+                    FileUtils.readFileToString(
+                        file
+                    ),
+                    Yconfig.class
+                )
+            ).orElse(new Yconfig());
+        } catch (final IOException exc) {
+            throw new IllegalStateException(
+                "Unable to read config file",
+                exc
+            );
         }
     }
+
 }

@@ -1,7 +1,6 @@
 ## Status
 
 [![Build Status](https://travis-ci.org/ggajos/ot-clean.svg?branch=master)](https://travis-ci.org/ggajos/ot-clean)
-[![Coverage Status](https://coveralls.io/repos/ggajos/ot-clean/badge.svg?branch=master&service=github)](https://coveralls.io/github/ggajos/ot-clean?branch=master)
 
 ## Motivation
 
@@ -14,6 +13,18 @@ executing `ot-clean` you can get rid of all garbage.
 
 Unpack [latest release](https://github.com/ggajos/ot-clean/releases) and add it
 to your `path`. You might want to read also [How to efficiently manage PATH variable in Windows](http://ggajos.com/environment-variables-management/).
+
+### .clean.yml
+
+You can create `.clean.yml` file and specify which files/dirs you would like to
+delete. Similar to `.gitignore` concept but using well known `yml` file standard.
+
+```
+deletes:
+ - target
+ - subproject/target/logs
+ - ../logs
+```
 
 #### Run
 
@@ -28,5 +39,5 @@ ot-clean
 
 * ✓ 0.1 - Clean maven project in current directory without using maven
 * ✓ 0.2 - Recurrence parameter `r`
-* 0.3 - Support for cleanup supressing for specific directories
-* 0.4 - Customise which directories should be included during cleaning process.
+* ✓ 0.3 - Add support to delete custom directories via .clean.yml
+* 0.4 - Support wildcards
