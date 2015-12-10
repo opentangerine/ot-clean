@@ -11,7 +11,7 @@
 
     <groupId>com.opentangerine.clean</groupId>
     <artifactId>ot-clean</artifactId>
-    <version>0.2</version>
+    <version>0.3</version>
 
     <properties>
         <hibernate.validator>5.0.0.Final</hibernate.validator>
