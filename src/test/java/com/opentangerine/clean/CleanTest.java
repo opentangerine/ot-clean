@@ -109,6 +109,41 @@ public final class CleanTest {
     }
 
     /**
+     * Delete maven target using yaml configuration.
+     */
+    @Test
+    public void deleteMavenProjectUsingYamlConfig() {
+        final Path target = this.createMavenAndGetTarget();
+        final Path root = target.getParent();
+        this.writeYml(root, "deletes:\n - target");
+        MatcherAssert.assertThat(
+            target.toFile().isDirectory(),
+            Matchers.is(true)
+        );
+        new Cleanable.Yclean(new Mode("d")).clean(root);
+        MatcherAssert.assertThat(
+            target.toFile().isDirectory(),
+            Matchers.is(false)
+        );
+    }
+
+    /**
+     * Create yml file.
+     * @param root Directory.
+     * @param content Content.
+     */
+    private void writeYml(final Path root, final String content) {
+        try {
+            FileUtils.writeStringToFile(
+                root.resolve("clean.yml").toFile(),
+                content
+            );
+        } catch (final IOException exc) {
+            throw new IllegalStateException("Failed", exc);
+        }
+    }
+
+    /**
      * Create simple maven repo and get target dir.
      * @return Target directory.
      */
@@ -124,7 +159,6 @@ public final class CleanTest {
         try {
             final Path root = this.folder.getRoot().toPath();
             FileUtils.touch(root.resolve("pom.xml").toFile());
-            FileUtils.touch(root.resolve("clean.yml").toFile());
             FileUtils.touch(root.resolve("target/file.txt").toFile());
             FileUtils.touch(root.resolve("target/file2.txt").toFile());
             FileUtils.touch(root.resolve("subdir/target/file2.txt").toFile());

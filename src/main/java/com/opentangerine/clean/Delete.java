@@ -24,6 +24,7 @@
 package com.opentangerine.clean;
 
 import com.jcabi.log.Logger;
+import java.io.File;
 import java.nio.file.Path;
 import org.apache.commons.io.FileUtils;
 
@@ -48,15 +49,23 @@ public final class Delete {
     }
 
     /**
-     * Deletes directory under given path.
+     * Deletes file/dir under given path.
      * @param path Path.
      */
-    public void directory(final Path path) {
+    public void file(final Path path) {
+        this.file(path.toFile());
+    }
+
+    /**
+     * Deletes file/dir under given path.
+     * @param file File.
+     */
+    public void file(final File file) {
         if (this.mode.readonly()) {
-            Logger.info(this, "Directory '%s' can be deleted.", path);
+            Logger.info(this, "Directory '%s' can be deleted.", file);
         } else {
-            Logger.info(this, "Deleting '%s'", path);
-            FileUtils.deleteQuietly(path.toFile());
+            Logger.info(this, "Deleting '%s'", file);
+            FileUtils.deleteQuietly(file);
         }
     }
 }

@@ -64,7 +64,7 @@ public final class Clean implements Cleanable {
     public Clean(final Mode cmode) {
         this(
             cmode,
-            Arrays.asList(new Cleanable.Maven(cmode), new Cleanable.Yaml())
+            Arrays.asList(new Cleanable.Maven(cmode), new Yclean(cmode))
         );
     }
 
