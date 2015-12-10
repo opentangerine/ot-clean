@@ -27,5 +27,5 @@ ot-clean
 
 * ✓ 0.1 - Clean maven project in current directory without using maven
 * ✓ 0.2 - Recurrence parameter `r`
-* 0.3 - Add support to delete custom directories via ot-clean.yml
+* ✓ 0.3 - Add support to delete custom directories via ot-clean.yml
 * 0.4 - Support wildcards
