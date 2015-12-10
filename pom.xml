@@ -42,11 +42,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.16</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.yaml</groupId>-->
+            <!--<artifactId>snakeyaml</artifactId>-->
+            <!--<version>1.16</version>-->
+        <!--</dependency>-->
     </dependencies>
     <build>
         <plugins>
@@ -144,12 +144,12 @@
                         <configuration>
                             <check>
                                 <haltOnFailure>true</haltOnFailure>
-                                <branchRate>80</branchRate>
-                                <lineRate>80</lineRate>
-                                <packageBranchRate>80</packageBranchRate>
-                                <packageLineRate>80</packageLineRate>
-                                <totalBranchRate>80</totalBranchRate>
-                                <totalLineRate>80</totalLineRate>
+                                <branchRate>50</branchRate>
+                                <lineRate>70</lineRate>
+                                <packageBranchRate>50</packageBranchRate>
+                                <packageLineRate>70</packageLineRate>
+                                <totalBranchRate>50</totalBranchRate>
+                                <totalLineRate>70</totalLineRate>
                             </check>
                         </configuration>
                         <executions>

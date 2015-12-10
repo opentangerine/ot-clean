@@ -35,8 +35,7 @@ import java.util.Arrays;
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
  */
-@SuppressWarnings("PMD.DoNotUseThreads")
-public final class Clean implements Runnable {
+public final class Clean implements Cleanable {
 
     /**
      * Cleaning mode.
@@ -44,29 +43,40 @@ public final class Clean implements Runnable {
     private final transient Mode mode;
 
     /**
-     * Working path.
+     * Cleaners.
      */
-    private final transient Path path;
+    private final transient Iterable<Cleanable> cleaners;
 
     /**
      * Clean application.
      *
-     * @param cpath Working directory.
      * @param cargs Execution arguments.
      */
-    public Clean(final Path cpath, final String... cargs) {
-        this(cpath, new Mode(cargs));
+    public Clean(final String... cargs) {
+        this(new Mode(cargs));
     }
 
     /**
      * Ctor.
      *
-     * @param cpath Working directory.
      * @param cmode Mode.
      */
-    public Clean(final Path cpath, final Mode cmode) {
+    public Clean(final Mode cmode) {
+        this(
+            cmode,
+            Arrays.asList(new Cleanable.Maven(cmode), new Cleanable.Yaml())
+        );
+    }
+
+    /**
+     * Ctor.
+     *
+     * @param cmode Mode.
+     * @param ccleaners Cleaners.
+     */
+    public Clean(final Mode cmode, final Iterable<Cleanable> ccleaners) {
         this.mode = cmode;
-        this.path = cpath;
+        this.cleaners = ccleaners;
     }
 
     /**
@@ -77,21 +87,19 @@ public final class Clean implements Runnable {
     public static void main(final String... args) {
         new Console().help();
         final Path cpath = Paths.get(System.getProperty("user.dir"));
-        new Clean(cpath, args).run();
+        new Clean(args).clean(cpath);
         Logger.info(Clean.class, cpath.toString());
     }
 
     @Override
-    public void run() {
-        final Delete delete = new Delete(this.mode);
-        if (this.path.resolve("pom.xml").toFile().exists()) {
-            delete.directory(this.path.resolve("target"));
-        }
+    public void clean(final Path path) {
+        this.cleaners.forEach(it -> it.clean(path));
         if (this.mode.recurrence()) {
             Arrays
-                .stream(this.path.toFile().listFiles(File::isDirectory))
-                .forEach(it -> new Clean(it.toPath(), this.mode).run());
+                .stream(path.toFile().listFiles(File::isDirectory))
+                .forEach(it -> new Clean(this.mode).clean(it.toPath()));
         }
         Logger.debug(this, "Finished.");
     }
+
 }
