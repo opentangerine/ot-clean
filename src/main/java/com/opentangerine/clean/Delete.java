@@ -61,11 +61,13 @@ public final class Delete {
      * @param file File.
      */
     public void file(final File file) {
-        if (this.mode.readonly()) {
-            Logger.info(this, "Directory '%s' can be deleted.", file);
-        } else {
-            Logger.info(this, "Deleting '%s'", file);
-            FileUtils.deleteQuietly(file);
+        if (file.exists()) {
+            if (this.mode.readonly()) {
+                Logger.info(this, "Directory '%s' can be deleted.", file);
+            } else {
+                Logger.info(this, "Deleting '%s'", file);
+                FileUtils.deleteQuietly(file);
+            }
         }
     }
 }
