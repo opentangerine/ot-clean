@@ -87,7 +87,7 @@ public interface Cleanable {
 
         @Override
         public void clean(final Path path) {
-            final File file = path.resolve("clean.yml").toFile();
+            final File file = path.resolve(".clean.yml").toFile();
             if (file.exists()) {
                 Yconfig
                     .load(file)

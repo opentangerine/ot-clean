@@ -7,12 +7,9 @@ ot-clean
 
 Example usage: /> ot-clean -dr
 
-You can create example file called [clean.yml].
+You can create example file called [.clean.yml] and fill that file with list of
+items that should be deleted. Example file content:
 
-Example file content:
 deletes:
  - this file.txt
  - that directory
-
-
-
