@@ -24,77 +24,68 @@
 package com.opentangerine.clean;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+import org.apache.commons.io.FileUtils;
+import org.yaml.snakeyaml.Yaml;
 
 /**
- * This is initial class, should be changed to something else.
+ * Clean configuration file.
  *
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
  */
-public interface Cleanable {
+public final class Yconfig {
 
     /**
-     * Clean.
+     * List of paths to delete.
+     */
+    private transient List<String> deletes = Collections.emptyList();
+
+    /**
+     * Setter. This method is used by Yaml mapper only.
+     * @param sdeletes Values.
+     */
+    public void setDeletes(final List<String> sdeletes) {
+        this.deletes = sdeletes;
+    }
+
+    /**
+     * Files to delete.
      *
      * @param path Working directory.
+     * @return Stream of files.
      */
-    void clean(final Path path);
-
-    /**
-     * Cleanup maven structure.
-     */
-    final class Maven implements Cleanable {
-
-        /**
-         * Delete operation.
-         */
-        private final Delete delete;
-
-        /**
-         * Ctor.
-         * @param mode Mode.
-         */
-        public Maven(final Mode mode) {
-            this.delete = new Delete(mode);
-        }
-
-        @Override
-        public void clean(final Path path) {
-            if (path.resolve("pom.xml").toFile().exists()) {
-                this.delete.file(path.resolve("target"));
-            }
-        }
+    public Stream<Path> filesToDelete(final Path path) {
+        return this.deletes.stream().map(it -> path.resolve(it));
     }
 
     /**
-     * Cleanup using yaml configuration file.
+     * Load config from file.
+     *
+     * @param file File.
+     * @return Config Object.
      */
-    final class Yclean implements Cleanable {
-
-        /**
-         * Delete operation.
-         */
-        private final Delete delete;
-
-        /**
-         * Ctor.
-         * @param mode Mode.
-         */
-        public Yclean(final Mode mode) {
-            this.delete = new Delete(mode);
+    public static Yconfig load(final File file) {
+        try {
+            return Optional.ofNullable(
+                new Yaml().loadAs(
+                    FileUtils.readFileToString(
+                        file
+                    ),
+                    Yconfig.class
+                )
+            ).orElse(new Yconfig());
+        } catch (final IOException exc) {
+            throw new IllegalStateException(
+                "Unable to read config file",
+                exc
+            );
         }
-
-        @Override
-        public void clean(final Path path) {
-            final File file = path.resolve("clean.yml").toFile();
-            if (file.exists()) {
-                Yconfig
-                    .load(file)
-                    .filesToDelete(path)
-                    .forEach(this.delete::file);
-            }
-        }
-
     }
+
 }
