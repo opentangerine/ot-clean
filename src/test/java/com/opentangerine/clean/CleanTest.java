@@ -57,7 +57,7 @@ public final class CleanTest {
             target.toFile().isDirectory(),
             Matchers.is(true)
         );
-        new Clean(Paths.get(this.folder.getRoot().toURI()), "").run();
+        new Clean("").clean(Paths.get(this.folder.getRoot().toURI()));
         MatcherAssert.assertThat(
             target.toFile().isDirectory(),
             Matchers.is(true)
@@ -70,7 +70,7 @@ public final class CleanTest {
     @Test
     public void noExceptionOnEmptyDir() {
         new Console().help();
-        new Clean(Paths.get(this.folder.getRoot().toURI()), "").run();
+        new Clean("").clean(Paths.get(this.folder.getRoot().toURI()));
     }
 
     /**
@@ -83,7 +83,7 @@ public final class CleanTest {
             target.toFile().isDirectory(),
             Matchers.is(true)
         );
-        new Clean(Paths.get(this.folder.getRoot().toURI()), "-d").run();
+        new Clean("-d").clean(Paths.get(this.folder.getRoot().toURI()));
         MatcherAssert.assertThat(
             target.toFile().isDirectory(),
             Matchers.is(false)
@@ -95,13 +95,13 @@ public final class CleanTest {
      */
     @Test
     public void deleteTargetSubdirForMavenProject() {
-        final Path root = this.createMavenProject();
+        final Path root = this.createProject();
         final String subTarget = "subdir/target";
         MatcherAssert.assertThat(
             root.resolve(subTarget).toFile().isDirectory(),
             Matchers.is(true)
         );
-        new Clean(Paths.get(this.folder.getRoot().toURI()), "dr").run();
+        new Clean("dr").clean(Paths.get(this.folder.getRoot().toURI()));
         MatcherAssert.assertThat(
             root.resolve(subTarget).toFile().isDirectory(),
             Matchers.is(false)
@@ -113,17 +113,18 @@ public final class CleanTest {
      * @return Target directory.
      */
     private Path createMavenAndGetTarget() {
-        return this.createMavenProject().resolve("target");
+        return this.createProject().resolve("target");
     }
 
     /**
      * Creates maven project structure.
      * @return Temp directory of maven project.
      */
-    private Path createMavenProject() {
+    private Path createProject() {
         try {
             final Path root = this.folder.getRoot().toPath();
             FileUtils.touch(root.resolve("pom.xml").toFile());
+            FileUtils.touch(root.resolve("clean.yml").toFile());
             FileUtils.touch(root.resolve("target/file.txt").toFile());
             FileUtils.touch(root.resolve("target/file2.txt").toFile());
             FileUtils.touch(root.resolve("subdir/target/file2.txt").toFile());
@@ -136,4 +137,5 @@ public final class CleanTest {
             );
         }
     }
+
 }
