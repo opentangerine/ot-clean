@@ -135,7 +135,7 @@ public final class CleanTest {
     private void writeYml(final Path root, final String content) {
         try {
             FileUtils.writeStringToFile(
-                root.resolve("clean.yml").toFile(),
+                root.resolve(".clean.yml").toFile(),
                 content
             );
         } catch (final IOException exc) {
