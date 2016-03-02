@@ -26,11 +26,14 @@ package com.opentangerine.clean;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.shared.utils.io.DirectoryScanner;
 import org.yaml.snakeyaml.Yaml;
 
 /**
@@ -61,7 +64,17 @@ public final class Yconfig {
      * @return Stream of files.
      */
     public Stream<Path> filesToDelete(final Path path) {
-        return this.deletes.stream().map(it -> path.resolve(it));
+        // FIXME GG: in progress
+        final Stream<String> files = this.deletes.stream();
+        DirectoryScanner ds = new DirectoryScanner();
+        ds.setIncludes(files.toArray(String[]::new));
+        ds.setBasedir( path.toFile() );
+        ds.setCaseSensitive(false);
+        ds.scan();
+        return Stream.concat(
+            Arrays.stream(ds.getIncludedDirectories()),
+            Arrays.stream(ds.getIncludedFiles())
+        ).map(it -> path.resolve(it));
     }
 
     /**
