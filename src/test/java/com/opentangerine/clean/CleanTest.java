@@ -128,6 +128,87 @@ public final class CleanTest {
     }
 
     /**
+     * Wildcard testing: Check extension.
+     */
+    @Test
+    public void deleteFileUsingExtensionWildcardMatching() {
+        removeSimpleFileUsingPattern("subdir/sub/simple.*");
+    }
+
+    /**
+     * Wildcard testing: Check filename.
+     */
+    @Test
+    public void deleteFileUsingNameWildcardMatching() {
+        removeSimpleFileUsingPattern("subdir/sub/*.txt");
+    }
+
+    /**
+     * Wildcard testing: Check star at the end of the line.
+     */
+    @Test
+    public void deleteFileUsingSuffixStarWildcardMatching() {
+        removeSimpleFileUsingPattern("subdir/sub/*");
+    }
+
+    /**
+     * Wildcard testing: Check star in the middle.
+     */
+    @Test
+    public void deleteFileUsingMiddleStarWildcardMatching() {
+        removeSimpleFileUsingPattern("subdir/*/simple.txt");
+    }
+
+    /**
+     * Wildcard testing: Check double star at the beginning.
+     */
+    @Test
+    public void deleteFileUsingDoubleStarStartWildcardMatching() {
+        removeSimpleFileUsingPattern("**/simple.txt");
+    }
+
+    /**
+     * Wildcard testing: Check star at the beginning.
+     */
+    @Test
+    public void deleteFileUsingSingleStarStartWildcardMatching() {
+        removeSimpleFileUsingPattern("*/simple.txt", false);
+    }
+
+    /**
+     * Remove simple.txt file using wildcard.
+     * @param pattern Pattern.
+     * @param deleted Does file should be deleted.
+     */
+    private void removeSimpleFileUsingPattern(
+        final String pattern,
+        final boolean deleted
+    ) {
+        final Path root = this.createProject();
+        // FIXME GG: in progress, add information to readme that pattern should be
+        // double quoted
+        // FIXME GG: in progress, add feature idea to automatically wrap file paths using double quotes
+        this.writeYml(root, "deletes:\n - \"" + pattern + "\"");
+        MatcherAssert.assertThat(
+            root.resolve("subdir/sub/simple.txt").toFile().exists(),
+            Matchers.is(true)
+        );
+        new Cleanable.Yclean(new Mode("d")).clean(root);
+        MatcherAssert.assertThat(
+            root.resolve("subdir/sub/simple.txt").toFile().exists(),
+            Matchers.is(!deleted)
+        );
+    }
+
+    /**
+     * Remove simple.txt file using wildcard.
+     * @param pattern Pattern.
+     */
+    private void removeSimpleFileUsingPattern(final String pattern) {
+        this.removeSimpleFileUsingPattern(pattern, true);
+    }
+
+    /**
      * Create yml file.
      * @param root Directory.
      * @param content Content.
@@ -163,6 +244,7 @@ public final class CleanTest {
             FileUtils.touch(root.resolve("target/file2.txt").toFile());
             FileUtils.touch(root.resolve("subdir/target/file2.txt").toFile());
             FileUtils.touch(root.resolve("subdir/pom.xml").toFile());
+            FileUtils.touch(root.resolve("subdir/sub/simple.txt").toFile());
             return root;
         } catch (final IOException exc) {
             throw new IllegalStateException(
