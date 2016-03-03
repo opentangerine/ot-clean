@@ -63,11 +63,30 @@ public final class Delete {
     public void file(final File file) {
         if (file.exists()) {
             if (this.mode.readonly()) {
-                Logger.info(this, "Directory '%s' can be deleted.", file);
+                Logger.info(
+                    this,
+                    "%s '%s' can be deleted.",
+                    this.prefix(file),
+                    file
+                );
             } else {
                 Logger.info(this, "Deleting '%s'", file);
                 FileUtils.deleteQuietly(file);
             }
         }
     }
+
+    /**
+     * Display human readable prefix for file resource.
+     * @param file File.
+     * @return String.
+     */
+    private String prefix(final File file) {
+        String prefix = "File";
+        if (file.isDirectory()) {
+            prefix = "Directory";
+        }
+        return prefix;
+    }
+
 }
