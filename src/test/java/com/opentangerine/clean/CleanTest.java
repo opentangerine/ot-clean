@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Rule;
@@ -39,7 +40,13 @@ import org.junit.rules.TemporaryFolder;
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
  */
+@SuppressWarnings("PMD.TooManyMethods")
 public final class CleanTest {
+
+    /**
+     * Simple text file.
+     */
+    private static final String SIMPLE_TXT = "subdir/sub/simple.txt";
 
     /**
      * Temporary dir.
@@ -120,7 +127,7 @@ public final class CleanTest {
             target.toFile().isDirectory(),
             Matchers.is(true)
         );
-        new Cleanable.Yclean(new Mode("d")).clean(root);
+        new Cleanable.Yclean(new Mode(Mode.Arg.D.getLabel())).clean(root);
         MatcherAssert.assertThat(
             target.toFile().isDirectory(),
             Matchers.is(false)
@@ -132,7 +139,7 @@ public final class CleanTest {
      */
     @Test
     public void deleteFileUsingExtensionWildcardMatching() {
-        removeSimpleFileUsingPattern("subdir/sub/simple.*");
+        this.removeSimpleFileUsingPattern("subdir/sub/simple.*");
     }
 
     /**
@@ -140,7 +147,7 @@ public final class CleanTest {
      */
     @Test
     public void deleteFileUsingNameWildcardMatching() {
-        removeSimpleFileUsingPattern("subdir/sub/*.txt");
+        this.removeSimpleFileUsingPattern("subdir/sub/*.txt");
     }
 
     /**
@@ -148,7 +155,7 @@ public final class CleanTest {
      */
     @Test
     public void deleteFileUsingSuffixStarWildcardMatching() {
-        removeSimpleFileUsingPattern("subdir/sub/*");
+        this.removeSimpleFileUsingPattern("subdir/sub/*");
     }
 
     /**
@@ -156,7 +163,7 @@ public final class CleanTest {
      */
     @Test
     public void deleteFileUsingMiddleStarWildcardMatching() {
-        removeSimpleFileUsingPattern("subdir/*/simple.txt");
+        this.removeSimpleFileUsingPattern("subdir/*/simple.txt");
     }
 
     /**
@@ -164,7 +171,7 @@ public final class CleanTest {
      */
     @Test
     public void deleteFileUsingDoubleStarStartWildcardMatching() {
-        removeSimpleFileUsingPattern("**/simple.txt");
+        this.removeSimpleFileUsingPattern("**/simple.txt");
     }
 
     /**
@@ -172,7 +179,7 @@ public final class CleanTest {
      */
     @Test
     public void deleteFileUsingSingleStarStartWildcardMatching() {
-        removeSimpleFileUsingPattern("*/simple.txt", false);
+        this.removeSimpleFileUsingPattern("*/simple.txt", false);
     }
 
     /**
@@ -185,14 +192,21 @@ public final class CleanTest {
         final boolean deleted
     ) {
         final Path root = this.createProject();
-        this.writeYml(root, "deletes:\n - \"" + pattern + "\"");
+        this.writeYml(
+            root,
+            StringUtils.join(
+                "deletes:\n - \"",
+                pattern,
+                "\""
+            )
+        );
         MatcherAssert.assertThat(
-            root.resolve("subdir/sub/simple.txt").toFile().exists(),
+            root.resolve(SIMPLE_TXT).toFile().exists(),
             Matchers.is(true)
         );
         new Cleanable.Yclean(new Mode("d")).clean(root);
         MatcherAssert.assertThat(
-            root.resolve("subdir/sub/simple.txt").toFile().exists(),
+            root.resolve(SIMPLE_TXT).toFile().exists(),
             Matchers.is(!deleted)
         );
     }
@@ -241,7 +255,7 @@ public final class CleanTest {
             FileUtils.touch(root.resolve("target/file2.txt").toFile());
             FileUtils.touch(root.resolve("subdir/target/file2.txt").toFile());
             FileUtils.touch(root.resolve("subdir/pom.xml").toFile());
-            FileUtils.touch(root.resolve("subdir/sub/simple.txt").toFile());
+            FileUtils.touch(root.resolve(SIMPLE_TXT).toFile());
             return root;
         } catch (final IOException exc) {
             throw new IllegalStateException(

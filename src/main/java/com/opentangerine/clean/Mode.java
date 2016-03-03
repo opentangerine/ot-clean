@@ -52,7 +52,7 @@ public final class Mode {
      * @return True if in readonly mode
      */
     public boolean readonly() {
-        return !this.concat().contains("d");
+        return !Arg.D.within(this.arguments);
     }
 
     /**
@@ -60,16 +60,61 @@ public final class Mode {
      * @return True if recurrence
      */
     public boolean recurrence() {
-        return this.concat().contains("r");
+        return Arg.R.within(this.arguments);
     }
 
     /**
-     * Combine all arguments and remove dash.
-     * @return Arguments as plain string.
+     * Enumeration of allowed program arguments.
      */
-    private String concat() {
-        return StringUtils.replaceChars(
-            StringUtils.join(this.arguments), "- ", ""
-        );
+    public enum Arg {
+        /**
+         * Switch read-only mode to false.
+         */
+        D("d"),
+        /**
+         * Enable recurrence mode.
+         */
+        R("r");
+
+        /**
+         * Label.
+         */
+        private String label;
+
+        /**
+         * Ctor.
+         * @param lbl Argument label.
+         */
+        Arg(final String lbl) {
+            this.label = lbl;
+        }
+
+        /**
+         * Check if label exists in args list.
+         * @param args Args list.
+         * @return True if exists.
+         */
+        public boolean within(final String... args) {
+            return Arg.concat(args).contains(this.label);
+        }
+
+        /**
+         * Argument label.
+         * @return Label value.
+         */
+        public String getLabel() {
+            return this.label;
+        }
+
+        /**
+         * Combine all arguments and remove dash.
+         * @param args Args list.
+         * @return Arguments as plain string.
+         */
+        private static String concat(final String... args) {
+            return StringUtils.replaceChars(
+                StringUtils.join(args), "- ", ""
+            );
+        }
     }
 }
