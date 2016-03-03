@@ -40,8 +40,11 @@ deletes:
  - "../logs"
 ```
 
+[Please note that when using wildcards, double quote have to be used](http://ggajos.com/ot-clean-yaml-alias-nodes/)
+
 [DirectoryScanner](https://maven.apache.org/shared/maven-shared-utils/apidocs/org/apache/maven/shared/utils/io/DirectoryScanner.html)
-is using quite specific pattern naming.
+is using quite specific pattern naming. If you want to delete files with specific
+extension you have to use `"**\*.log"`, please read below for more examples:
 
 > When a name path segment is matched against a pattern path segment, the following special characters can be used:
 > '*' matches zero or more characters
@@ -54,7 +57,8 @@ is using quite specific pattern naming.
 >  * "**" matches everything in a directory tree.
 >  * "**\test\**\XYZ*" matches all files/dirs which start with "XYZ" and where there is a parent directory called test (e.g. "abc\test\def\ghi\XYZ123").
 
-[Please note that when using wildcards, double quote have to be used](http://ggajos.com/ot-clean-yaml-alias-nodes/)
+from: [DirectoryScanner](https://maven.apache.org/shared/maven-shared-utils/apidocs/org/apache/maven/shared/utils/io/DirectoryScanner.html) 
+
 
 #### Run
 
