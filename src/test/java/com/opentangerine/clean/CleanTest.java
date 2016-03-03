@@ -185,9 +185,6 @@ public final class CleanTest {
         final boolean deleted
     ) {
         final Path root = this.createProject();
-        // FIXME GG: in progress, add information to readme that pattern should be
-        // double quoted
-        // FIXME GG: in progress, add feature idea to automatically wrap file paths using double quotes
         this.writeYml(root, "deletes:\n - \"" + pattern + "\"");
         MatcherAssert.assertThat(
             root.resolve("subdir/sub/simple.txt").toFile().exists(),
