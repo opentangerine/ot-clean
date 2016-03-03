@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Rule;
@@ -39,7 +40,13 @@ import org.junit.rules.TemporaryFolder;
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
  */
+@SuppressWarnings("PMD.TooManyMethods")
 public final class CleanTest {
+
+    /**
+     * Simple text file.
+     */
+    private static final String SIMPLE_TXT = "subdir/sub/simple.txt";
 
     /**
      * Temporary dir.
@@ -120,11 +127,104 @@ public final class CleanTest {
             target.toFile().isDirectory(),
             Matchers.is(true)
         );
-        new Cleanable.Yclean(new Mode("d")).clean(root);
+        new Cleanable.Yclean(new Mode(Mode.Arg.D.getLabel())).clean(root);
         MatcherAssert.assertThat(
             target.toFile().isDirectory(),
             Matchers.is(false)
         );
+    }
+
+    /**
+     * Wildcard testing: Check extension.
+     */
+    @Test
+    public void deleteFileUsingExtensionWildcardMatching() {
+        this.removeSimpleFileUsingPattern("subdir/sub/simple.*");
+    }
+
+    /**
+     * Wildcard testing: Check filename.
+     */
+    @Test
+    public void deleteFileUsingNameWildcardMatching() {
+        this.removeSimpleFileUsingPattern("subdir/sub/*.txt");
+    }
+
+    /**
+     * Wildcard testing: Check star at the end of the line.
+     */
+    @Test
+    public void deleteFileUsingSuffixStarWildcardMatching() {
+        this.removeSimpleFileUsingPattern("subdir/sub/*");
+    }
+
+    /**
+     * Wildcard testing: Check star in the middle.
+     */
+    @Test
+    public void deleteFileUsingMiddleStarWildcardMatching() {
+        this.removeSimpleFileUsingPattern("subdir/*/simple.txt");
+    }
+
+    /**
+     * Wildcard testing: Check double star at the beginning.
+     */
+    @Test
+    public void deleteFileUsingDoubleStarStartWildcardMatching() {
+        this.removeSimpleFileUsingPattern("**/simple.txt");
+    }
+
+    /**
+     * Wildcard testing: Check double star at the beginning.
+     */
+    @Test
+    public void deleteFileUsingExtensionOnlyWildcardMatching() {
+        this.removeSimpleFileUsingPattern("**/*.txt");
+    }
+
+    /**
+     * Wildcard testing: Check star at the beginning.
+     */
+    @Test
+    public void deleteFileUsingSingleStarStartWildcardMatching() {
+        this.removeSimpleFileUsingPattern("*/simple.txt", false);
+    }
+
+    /**
+     * Remove simple.txt file using wildcard.
+     * @param pattern Pattern.
+     * @param deleted Does file should be deleted.
+     */
+    private void removeSimpleFileUsingPattern(
+        final String pattern,
+        final boolean deleted
+    ) {
+        final Path root = this.createProject();
+        this.writeYml(
+            root,
+            StringUtils.join(
+                "deletes:\n - \"",
+                pattern,
+                "\""
+            )
+        );
+        MatcherAssert.assertThat(
+            root.resolve(SIMPLE_TXT).toFile().exists(),
+            Matchers.is(true)
+        );
+        new Cleanable.Yclean(new Mode("d")).clean(root);
+        MatcherAssert.assertThat(
+            root.resolve(SIMPLE_TXT).toFile().exists(),
+            Matchers.is(!deleted)
+        );
+    }
+
+    /**
+     * Remove simple.txt file using wildcard.
+     * @param pattern Pattern.
+     */
+    private void removeSimpleFileUsingPattern(final String pattern) {
+        this.removeSimpleFileUsingPattern(pattern, true);
     }
 
     /**
@@ -163,6 +263,7 @@ public final class CleanTest {
             FileUtils.touch(root.resolve("target/file2.txt").toFile());
             FileUtils.touch(root.resolve("subdir/target/file2.txt").toFile());
             FileUtils.touch(root.resolve("subdir/pom.xml").toFile());
+            FileUtils.touch(root.resolve(SIMPLE_TXT).toFile());
             return root;
         } catch (final IOException exc) {
             throw new IllegalStateException(
