@@ -175,6 +175,14 @@ public final class CleanTest {
     }
 
     /**
+     * Wildcard testing: Check double star at the beginning.
+     */
+    @Test
+    public void deleteFileUsingExtensionOnlyWildcardMatching() {
+        this.removeSimpleFileUsingPattern("**/*.txt");
+    }
+
+    /**
      * Wildcard testing: Check star at the beginning.
      */
     @Test
