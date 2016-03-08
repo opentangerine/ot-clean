@@ -6,7 +6,7 @@
 
 If you are working on multiple projects you probably encounter fact that lots
 of garbage is produced. In many cases `clean` target from maven, sbt or any
-other buld tool is not enough. This project want to target this issue. By simple
+other build tool is not enough. This project want to target this issue. By simple
 executing `ot-clean` you can get rid of all garbage.
 
 ## Usage
@@ -41,7 +41,7 @@ deletes:
 ```
 
 Since version 0.5 double quotes are **no longer needed**. [Navigate here if you
-wandering why I had to use them](http://ggajos.com/ot-clean-yaml-alias-nodes/)
+wondering why they were needed before](http://ggajos.com/ot-clean-yaml-alias-nodes/).
 
 [DirectoryScanner](https://maven.apache.org/shared/maven-shared-utils/apidocs/org/apache/maven/shared/utils/io/DirectoryScanner.html)
 is using quite specific pattern naming. If you want to delete files with specific
@@ -84,7 +84,7 @@ You can see list of all supported arguments for current version [here](https://g
 * ✓ 0.2 - Recurrence parameter `r`
 * ✓ 0.3 - Add support to delete custom directories via .clean.yml
 * ✓ 0.4 - Support wildcards
-* ✓ 0.5 - Preprocess yaml file so double quotes are no longer needed.
+* ✓ 0.5 - Preprocess Yaml file so double quotes are no longer needed.
 
 ### Backlog
 
