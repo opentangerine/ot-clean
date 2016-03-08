@@ -34,6 +34,7 @@ import org.apache.commons.io.IOUtils;
  *
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
+ * @since 0.5
  */
 public final class Console {
     /**

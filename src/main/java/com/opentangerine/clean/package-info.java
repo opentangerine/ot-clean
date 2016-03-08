@@ -26,6 +26,7 @@
  * Application main package.
  *
  * @author Grzegorz Gajos
- * @version 1.0
+ * @version $Id$
+ * @since 0.5
  */
 package com.opentangerine.clean;

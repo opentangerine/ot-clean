@@ -34,6 +34,7 @@ import java.util.Arrays;
  *
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
+ * @since 0.5
  */
 public final class Clean implements Cleanable {
 
