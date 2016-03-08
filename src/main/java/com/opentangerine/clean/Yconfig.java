@@ -88,7 +88,7 @@ public final class Yconfig {
         try {
             return Optional.ofNullable(
                 new Yaml().loadAs(
-                    preprocess(file),
+                    preprocess(FileUtils.readFileToString(file)),
                     Yconfig.class
                 )
             ).orElse(new Yconfig());
@@ -103,15 +103,12 @@ public final class Yconfig {
     /**
      * Preprocess input file and append double quotes for all paths in the file.
      *
-     * @param file Input file.
+     * @param text Input text.
      * @return Preprocessed file.
-     * @throws IOException On file error.
      */
-    private static String preprocess(final File file) throws IOException {
+    private static String preprocess(final String text) {
         final String pattern = "- *";
-        return new Replace(
-            FileUtils.readFileToString(file)
-        ).replace(
+        return new Replace(text).replace(
             line -> line.contains(pattern),
             line -> StringUtils.join(
                 StringUtils.replace(line, pattern, "- \"*"),

@@ -53,9 +53,9 @@ public final class Replace {
      * Apply replace transformation on selected line only if matching
      * function returned true.
      *
-     * @param matching Matching function.
-     * @param transformation Line transformation.
-     * @return Transformed file.
+     * @param matching Closure that returns true if line has been matched.
+     * @param transformation Closure with line transformation.
+     * @return Replace object.
      */
     public Replace replace(
         final Function<String, Boolean> matching,
