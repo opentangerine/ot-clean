@@ -23,71 +23,66 @@
  */
 package com.opentangerine.clean;
 
-import com.jcabi.log.Logger;
-import java.io.File;
-import java.nio.file.Path;
-import org.apache.commons.io.FileUtils;
+import java.util.Scanner;
+import java.util.function.Function;
+import org.apache.commons.lang3.text.StrBuilder;
 
 /**
- * Class responsible for all delete operations.
+ * Replace object that is able to apply specific line transformation for a
+ * given text.
  *
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
  * @since 0.5
  */
-public final class Delete {
+public final class Replace {
     /**
-     * Clean mode.
+     * Text text.
      */
-    private final transient Mode mode;
+    private final transient String text;
 
     /**
      * Ctor.
-     * @param cmode Clean mode.
+     * @param content Raw text text.
      */
-    public Delete(final Mode cmode) {
-        this.mode = cmode;
+    public Replace(final String content) {
+        this.text = content;
     }
 
     /**
-     * Deletes file/dir under given path.
-     * @param path Path.
+     * Apply replace transformation on selected line only if matching
+     * function returned true.
+     *
+     * @param matching Matching function.
+     * @param transformation Line transformation.
+     * @return Transformed file.
      */
-    public void file(final Path path) {
-        this.file(path.toFile());
-    }
-
-    /**
-     * Deletes file/dir under given path.
-     * @param file File.
-     */
-    public void file(final File file) {
-        if (file.exists()) {
-            if (this.mode.readonly()) {
-                Logger.info(
-                    this,
-                    "%s '%s' can be deleted.",
-                    Delete.prefix(file),
-                    file
-                );
-            } else {
-                Logger.info(this, "Deleting '%s'", file);
-                FileUtils.deleteQuietly(file);
+    public Replace replace(
+        final Function<String, Boolean> matching,
+        final Function<String, String> transformation
+    ) {
+        final StrBuilder out = new StrBuilder();
+        try (Scanner scanner = new Scanner(this.text)) {
+            while (scanner.hasNextLine()) {
+                final String line = scanner.nextLine();
+                if (matching.apply(line)) {
+                    out.append(transformation.apply(line));
+                } else {
+                    out.append(line);
+                }
+                out.appendNewLine();
             }
         }
+        return new Replace(out.build());
     }
 
     /**
-     * Display human readable prefix for file resource.
-     * @param file File.
-     * @return String.
+     * Return final version of text.
+     *
+     * @return Final version of text.
      */
-    private static String prefix(final File file) {
-        String prefix = "File";
-        if (file.isDirectory()) {
-            prefix = "Directory";
-        }
-        return prefix;
+    public String output() {
+        return this.text;
     }
 
 }

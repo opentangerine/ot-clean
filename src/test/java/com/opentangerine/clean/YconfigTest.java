@@ -37,6 +37,7 @@ import org.yaml.snakeyaml.error.YAMLException;
  *
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
+ * @since 0.5
  */
 public final class YconfigTest {
 
@@ -47,6 +48,15 @@ public final class YconfigTest {
     @Test(expected = YAMLException.class)
     public void brokenFile() throws IOException {
         Yconfig.load(this.example("test-broken.yml"));
+    }
+
+    /**
+     * Check if no spaces is ok.
+     * @throws IOException if fails.
+     */
+    @Test(expected = YAMLException.class)
+    public void brokenFileNoSpaces() throws IOException {
+        Yconfig.load(this.example("test-broken-2.yml"));
     }
 
     /**
@@ -66,7 +76,7 @@ public final class YconfigTest {
     @Test
     public void fullFile() throws IOException {
         final Yconfig config = Yconfig.load(this.example("test-full.yml"));
-        final Path[] arr = config
+        config
             .filesToDelete(Paths.get("."))
             .toArray(it -> new Path[0]);
         MatcherAssert.assertThat(config, Matchers.notNullValue());

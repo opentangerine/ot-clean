@@ -39,6 +39,7 @@ import org.junit.rules.TemporaryFolder;
  *
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
+ * @since 0.5
  */
 @SuppressWarnings("PMD.TooManyMethods")
 public final class CleanTest {
@@ -103,14 +104,14 @@ public final class CleanTest {
     @Test
     public void deleteTargetSubdirForMavenProject() {
         final Path root = this.createProject();
-        final String subTarget = "subdir/target";
+        final String subdir = "subdir/target";
         MatcherAssert.assertThat(
-            root.resolve(subTarget).toFile().isDirectory(),
+            root.resolve(subdir).toFile().isDirectory(),
             Matchers.is(true)
         );
         new Clean("dr").clean(Paths.get(this.folder.getRoot().toURI()));
         MatcherAssert.assertThat(
-            root.resolve(subTarget).toFile().isDirectory(),
+            root.resolve(subdir).toFile().isDirectory(),
             Matchers.is(false)
         );
     }
@@ -202,19 +203,15 @@ public final class CleanTest {
         final Path root = this.createProject();
         this.writeYml(
             root,
-            StringUtils.join(
-                "deletes:\n - \"",
-                pattern,
-                "\""
-            )
+            StringUtils.join("deletes:\n - ", pattern)
         );
         MatcherAssert.assertThat(
-            root.resolve(SIMPLE_TXT).toFile().exists(),
+            root.resolve(CleanTest.SIMPLE_TXT).toFile().exists(),
             Matchers.is(true)
         );
         new Cleanable.Yclean(new Mode("d")).clean(root);
         MatcherAssert.assertThat(
-            root.resolve(SIMPLE_TXT).toFile().exists(),
+            root.resolve(CleanTest.SIMPLE_TXT).toFile().exists(),
             Matchers.is(!deleted)
         );
     }
@@ -263,7 +260,7 @@ public final class CleanTest {
             FileUtils.touch(root.resolve("target/file2.txt").toFile());
             FileUtils.touch(root.resolve("subdir/target/file2.txt").toFile());
             FileUtils.touch(root.resolve("subdir/pom.xml").toFile());
-            FileUtils.touch(root.resolve(SIMPLE_TXT).toFile());
+            FileUtils.touch(root.resolve(CleanTest.SIMPLE_TXT).toFile());
             return root;
         } catch (final IOException exc) {
             throw new IllegalStateException(

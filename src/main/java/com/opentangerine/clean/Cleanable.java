@@ -31,6 +31,7 @@ import java.nio.file.Path;
  *
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
+ * @since 0.5
  */
 public interface Cleanable {
 
