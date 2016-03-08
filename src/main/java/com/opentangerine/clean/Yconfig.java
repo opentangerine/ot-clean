@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.shared.utils.io.DirectoryScanner;
 import org.yaml.snakeyaml.Yaml;
 
@@ -40,6 +41,7 @@ import org.yaml.snakeyaml.Yaml;
  *
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
+ * @since 0.5
  */
 public final class Yconfig {
 
@@ -86,9 +88,7 @@ public final class Yconfig {
         try {
             return Optional.ofNullable(
                 new Yaml().loadAs(
-                    FileUtils.readFileToString(
-                        file
-                    ),
+                    preprocess(file),
                     Yconfig.class
                 )
             ).orElse(new Yconfig());
@@ -98,6 +98,26 @@ public final class Yconfig {
                 exc
             );
         }
+    }
+
+    /**
+     * Preprocess input file and append double quotes for all paths in the file.
+     *
+     * @param file Input file.
+     * @return Preprocessed file.
+     * @throws IOException On file error.
+     */
+    private static String preprocess(final File file) throws IOException {
+        final String pattern = "- *";
+        return new Replace(
+            FileUtils.readFileToString(file)
+        ).replace(
+            line -> line.contains(pattern),
+            line -> StringUtils.join(
+                StringUtils.replace(line, pattern, "- \"*"),
+                "\""
+            )
+        ).output();
     }
 
 }

@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
+ * @since 0.5
  */
 @SuppressWarnings("PMD.BooleanInversion")
 public final class Mode {

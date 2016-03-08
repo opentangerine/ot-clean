@@ -35,12 +35,13 @@ wildcards, for example:
 
 ```
 deletes:
- - "*.log"
- - "subproject/**/logs.txt"
- - "../logs"
+ - *.log
+ - subproject/**/logs.txt
+ - ../logs
 ```
 
-[Please note that when using wildcards, double quote have to be used](http://ggajos.com/ot-clean-yaml-alias-nodes/)
+Since version 0.5 double quotes are **no longer needed**. [Navigate here if you
+wandering why I had to use them](http://ggajos.com/ot-clean-yaml-alias-nodes/)
 
 [DirectoryScanner](https://maven.apache.org/shared/maven-shared-utils/apidocs/org/apache/maven/shared/utils/io/DirectoryScanner.html)
 is using quite specific pattern naming. If you want to delete files with specific
@@ -83,10 +84,10 @@ You can see list of all supported arguments for current version [here](https://g
 * ✓ 0.2 - Recurrence parameter `r`
 * ✓ 0.3 - Add support to delete custom directories via .clean.yml
 * ✓ 0.4 - Support wildcards
+* ✓ 0.5 - Preprocess yaml file so double quotes are no longer needed.
 
 ### Backlog
 
-* Preprocess yaml file so double quotes are no longer needed.
 * At the end of the scanning without `d` argument, ask user if he wants to delete those files.
 * Add support for multiple base dirs (`from:` section)
 * Add some summary about deleted files, sizes, etc.
