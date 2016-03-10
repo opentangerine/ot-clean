@@ -66,6 +66,7 @@ public final class Summary {
     public void add(final File file) {
         this.count += 1;
         this.total += FileUtils.sizeOf(file);
+        // FIXME GG: in progress, create operation method to simplify ifs
         if (this.mode.readonly()) {
             this.info(file, "Found");
         } else {
