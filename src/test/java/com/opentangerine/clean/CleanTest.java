@@ -128,7 +128,13 @@ public final class CleanTest {
             target.toFile().isDirectory(),
             Matchers.is(true)
         );
-        new Cleanable.Yclean(new Mode(Mode.Arg.D.getLabel())).clean(root);
+        final Mode mode = new Mode(Mode.Arg.D.getLabel());
+        new Cleanable.Yclean(
+            new Delete(
+                mode,
+                new Summary(mode)
+            )
+        ).clean(root);
         MatcherAssert.assertThat(
             target.toFile().isDirectory(),
             Matchers.is(false)
@@ -209,7 +215,8 @@ public final class CleanTest {
             root.resolve(CleanTest.SIMPLE_TXT).toFile().exists(),
             Matchers.is(true)
         );
-        new Cleanable.Yclean(new Mode("d")).clean(root);
+        final Mode mode = new Mode("d");
+        new Cleanable.Yclean(new Delete(mode, new Summary(mode))).clean(root);
         MatcherAssert.assertThat(
             root.resolve(CleanTest.SIMPLE_TXT).toFile().exists(),
             Matchers.is(!deleted)
@@ -255,18 +262,31 @@ public final class CleanTest {
     private Path createProject() {
         try {
             final Path root = this.folder.getRoot().toPath();
-            FileUtils.touch(root.resolve("pom.xml").toFile());
-            FileUtils.touch(root.resolve("target/file.txt").toFile());
-            FileUtils.touch(root.resolve("target/file2.txt").toFile());
-            FileUtils.touch(root.resolve("subdir/target/file2.txt").toFile());
-            FileUtils.touch(root.resolve("subdir/pom.xml").toFile());
-            FileUtils.touch(root.resolve(CleanTest.SIMPLE_TXT).toFile());
+            this.tempFile(root.resolve("pom.xml"));
+            this.tempFile(root.resolve("target/file.txt"));
+            this.tempFile(root.resolve("target/file2.txt"));
+            this.tempFile(root.resolve("subdir/target/file2.txt"));
+            this.tempFile(root.resolve("subdir/pom.xml"));
+            this.tempFile(root.resolve(CleanTest.SIMPLE_TXT));
             return root;
         } catch (final IOException exc) {
             throw new IllegalStateException(
                 "Unable to create maven project structure",
                 exc
             );
+        }
+    }
+
+    /**
+     * Create temporary file with dummy date. Skip if file is directory.
+     *
+     * @param path Target path.
+     * @throws IOException Unknown IO Exception.
+     */
+    private void tempFile(final Path path) throws IOException {
+        FileUtils.touch(path.toFile());
+        if(!path.toFile().isDirectory()) {
+            FileUtils.writeStringToFile(path.toFile(), "two\blines");
         }
     }
 

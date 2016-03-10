@@ -25,56 +25,74 @@ package com.opentangerine.clean;
 
 import com.jcabi.log.Logger;
 import java.io.File;
-import java.nio.file.Path;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.io.FilenameUtils;
 
 /**
- * Class responsible for all delete operations.
+ * Summary is responsible for gathering all statistics data in user
+ * friendly way.
  *
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
- * @since 0.5
+ * @since 0.6
  */
-public final class Delete {
+public final class Summary {
     /**
      * Clean mode.
      */
     private final transient Mode mode;
     /**
-     * Summary.
+     * Total bytes.
      */
-    private final transient Summary summary;
+    private transient long total = 0L;
+    /**
+     * Count files and directories.
+     */
+    private transient long count = 0L;
 
     /**
      * Ctor.
-     * @param cmode Clean mode.
-     * @param csummary Summary.
+     * @param cmode Execution mode.
      */
-    public Delete(final Mode cmode, Summary csummary) {
+    public Summary(final Mode cmode) {
         this.mode = cmode;
-        this.summary = csummary;
     }
 
     /**
-     * Deletes file/dir under given path.
-     * @param path Path.
+     * Add file to summary.
+     *
+     * @param file File to add.
      */
-    public void file(final Path path) {
-        this.file(path.toFile());
-    }
-
-    /**
-     * Deletes file/dir under given path.
-     * @param file File.
-     */
-    public void file(final File file) {
-        if (file.exists()) {
-            this.summary.add(file);
-            if (!this.mode.readonly()) {
-                FileUtils.deleteQuietly(file);
-            }
+    public void add(final File file) {
+        this.count += 1;
+        this.total += FileUtils.sizeOf(file);
+        if (this.mode.readonly()) {
+            this.info(file, "Found");
+        } else {
+            this.info(file, "Deleting");
         }
+    }
+
+    /**
+     * Display summary based on current state.
+     */
+    public void finished() {
+        // FIXME GG: in progress, connect this informations into single line
+        // FIXME GG: in progress, add test cases
+        Logger.info(
+            this,
+            "Summary"
+        );
+        Logger.info(
+            this,
+            " - Total directories and files: %s",
+            this.count
+        );
+        Logger.info(
+            this,
+            " - Total occupied space: %s",
+            FileUtils.byteCountToDisplaySize(this.total)
+        );
     }
 
     /**
@@ -88,6 +106,17 @@ public final class Delete {
             prefix = "Directory";
         }
         return prefix;
+    }
+
+    private void info(final File file, final String operation) {
+        Logger.info(
+            this,
+            "%s: %s '%s' [%s]",
+            operation,
+            prefix(file),
+            file,
+            FileUtils.byteCountToDisplaySize(FileUtils.sizeOf(file))
+        );
     }
 
 }
