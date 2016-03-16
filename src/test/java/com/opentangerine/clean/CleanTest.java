@@ -285,7 +285,7 @@ public final class CleanTest {
      */
     private void tempFile(final Path path) throws IOException {
         FileUtils.touch(path.toFile());
-        if(!path.toFile().isDirectory()) {
+        if (!path.toFile().isDirectory()) {
             FileUtils.writeStringToFile(path.toFile(), "two\blines");
         }
     }
