@@ -26,7 +26,6 @@ package com.opentangerine.clean;
 import com.jcabi.log.Logger;
 import java.io.File;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 
 /**
  * Summary is responsible for gathering all statistics data in user
@@ -44,11 +43,11 @@ public final class Summary {
     /**
      * Total bytes.
      */
-    private transient long total = 0L;
+    private transient long total;
     /**
      * Count files and directories.
      */
-    private transient long count = 0L;
+    private transient long count;
 
     /**
      * Ctor.
@@ -66,58 +65,47 @@ public final class Summary {
     public void add(final File file) {
         this.count += 1;
         this.total += FileUtils.sizeOf(file);
-        // FIXME GG: in progress, create operation method to simplify ifs
-        if (this.mode.readonly()) {
-            this.info(file, "Found");
-        } else {
-            this.info(file, "Deleting");
-        }
+        Logger.info(
+            this,
+            "%s: %s '%s' [%s]",
+            Summary.info(this.mode.readonly(), "Found", "Deleting"),
+            Summary.info(file.isDirectory(), "Directory", "File"),
+            file,
+            FileUtils.byteCountToDisplaySize(FileUtils.sizeOf(file))
+        );
     }
 
     /**
      * Display summary based on current state.
      */
     public void finished() {
-        // FIXME GG: in progress, connect this informations into single line
-        // FIXME GG: in progress, add test cases
         Logger.info(
             this,
-            "Summary"
-        );
-        Logger.info(
-            this,
-            " - Total directories and files: %s",
-            this.count
-        );
-        Logger.info(
-            this,
-            " - Total occupied space: %s",
+            "Found %s elements. Space: %s",
+            this.count,
             FileUtils.byteCountToDisplaySize(this.total)
         );
     }
 
     /**
-     * Display human readable prefix for file resource.
-     * @param file File.
-     * @return String.
+     * Returns different description depends on provided condition.
+     *
+     * @param condition Condition.
+     * @param pos Value if true.
+     * @param neg Value if false.
+     * @return Value.
      */
-    private static String prefix(final File file) {
-        String prefix = "File";
-        if (file.isDirectory()) {
-            prefix = "Directory";
+    private static String info(
+        final boolean condition,
+        final String pos,
+        final String neg
+    ) {
+        String operation;
+        if (condition) {
+            operation = pos;
+        } else {
+            operation = neg;
         }
-        return prefix;
+        return operation;
     }
-
-    private void info(final File file, final String operation) {
-        Logger.info(
-            this,
-            "%s: %s '%s' [%s]",
-            operation,
-            prefix(file),
-            file,
-            FileUtils.byteCountToDisplaySize(FileUtils.sizeOf(file))
-        );
-    }
-
 }

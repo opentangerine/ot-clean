@@ -23,11 +23,9 @@
  */
 package com.opentangerine.clean;
 
-import com.jcabi.log.Logger;
 import java.io.File;
 import java.nio.file.Path;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Class responsible for all delete operations.
@@ -51,7 +49,7 @@ public final class Delete {
      * @param cmode Clean mode.
      * @param csummary Summary.
      */
-    public Delete(final Mode cmode, Summary csummary) {
+    public Delete(final Mode cmode, final Summary csummary) {
         this.mode = cmode;
         this.summary = csummary;
     }
@@ -75,19 +73,6 @@ public final class Delete {
                 FileUtils.deleteQuietly(file);
             }
         }
-    }
-
-    /**
-     * Display human readable prefix for file resource.
-     * @param file File.
-     * @return String.
-     */
-    private static String prefix(final File file) {
-        String prefix = "File";
-        if (file.isDirectory()) {
-            prefix = "Directory";
-        }
-        return prefix;
     }
 
 }
