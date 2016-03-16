@@ -67,9 +67,9 @@ public final class Summary {
         this.total += FileUtils.sizeOf(file);
         Logger.info(
             this,
-            "%s: %s '%s' [%s]",
+            "%s %s '%s' [%s]",
             Summary.info(this.mode.readonly(), "Found", "Deleting"),
-            Summary.info(file.isDirectory(), "Directory", "File"),
+            Summary.info(file.isDirectory(), "directory", "file"),
             file,
             FileUtils.byteCountToDisplaySize(FileUtils.sizeOf(file))
         );
@@ -81,7 +81,7 @@ public final class Summary {
     public void finished() {
         Logger.info(
             this,
-            "Found %s elements. Space: %s",
+            "Found %s element(s) [%s]",
             this.count,
             FileUtils.byteCountToDisplaySize(this.total)
         );
