@@ -23,7 +23,6 @@
  */
 package com.opentangerine.clean;
 
-import com.jcabi.log.Logger;
 import java.io.File;
 import java.nio.file.Path;
 import org.apache.commons.io.FileUtils;
@@ -40,13 +39,19 @@ public final class Delete {
      * Clean mode.
      */
     private final transient Mode mode;
+    /**
+     * Summary.
+     */
+    private final transient Summary summary;
 
     /**
      * Ctor.
      * @param cmode Clean mode.
+     * @param csummary Summary.
      */
-    public Delete(final Mode cmode) {
+    public Delete(final Mode cmode, final Summary csummary) {
         this.mode = cmode;
+        this.summary = csummary;
     }
 
     /**
@@ -63,31 +68,11 @@ public final class Delete {
      */
     public void file(final File file) {
         if (file.exists()) {
-            if (this.mode.readonly()) {
-                Logger.info(
-                    this,
-                    "%s '%s' can be deleted.",
-                    Delete.prefix(file),
-                    file
-                );
-            } else {
-                Logger.info(this, "Deleting '%s'", file);
+            this.summary.add(file);
+            if (!this.mode.readonly()) {
                 FileUtils.deleteQuietly(file);
             }
         }
-    }
-
-    /**
-     * Display human readable prefix for file resource.
-     * @param file File.
-     * @return String.
-     */
-    private static String prefix(final File file) {
-        String prefix = "File";
-        if (file.isDirectory()) {
-            prefix = "Directory";
-        }
-        return prefix;
     }
 
 }

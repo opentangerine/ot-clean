@@ -49,6 +49,11 @@ public final class Clean implements Cleanable {
     private final transient Iterable<Cleanable> cleaners;
 
     /**
+     * Cleaning summary.
+     */
+    private final transient Summary summary;
+
+    /**
      * Clean application.
      *
      * @param cargs Execution arguments.
@@ -63,21 +68,12 @@ public final class Clean implements Cleanable {
      * @param cmode Mode.
      */
     public Clean(final Mode cmode) {
-        this(
-            cmode,
-            Arrays.asList(new Cleanable.Maven(cmode), new Yclean(cmode))
-        );
-    }
-
-    /**
-     * Ctor.
-     *
-     * @param cmode Mode.
-     * @param ccleaners Cleaners.
-     */
-    public Clean(final Mode cmode, final Iterable<Cleanable> ccleaners) {
         this.mode = cmode;
-        this.cleaners = ccleaners;
+        this.summary = new Summary(this.mode);
+        this.cleaners = Arrays.asList(
+            new Cleanable.Maven(new Delete(this.mode, this.summary)),
+            new Yclean(new Delete(this.mode, this.summary))
+        );
     }
 
     /**
@@ -87,20 +83,29 @@ public final class Clean implements Cleanable {
      */
     public static void main(final String... args) {
         new Console().help();
-        final Path cpath = Paths.get(System.getProperty("user.dir"));
-        new Clean(args).clean(cpath);
-        Logger.info(Clean.class, cpath.toString());
+        final Path path = Paths.get(System.getProperty("user.dir"));
+        new Clean(args).clean(path);
+        Logger.info(Clean.class, path.toString());
     }
 
     @Override
     public void clean(final Path path) {
+        this.recurrence(path);
+        this.summary.finished();
+    }
+
+    /**
+     * Execute cleaning for current and nested directories.
+     *
+     * @param path Current path.
+     */
+    private void recurrence(final Path path) {
         this.cleaners.forEach(it -> it.clean(path));
         if (this.mode.recurrence()) {
             Arrays
                 .stream(path.toFile().listFiles(File::isDirectory))
-                .forEach(it -> new Clean(this.mode).clean(it.toPath()));
+                .forEach(it -> this.recurrence(it.toPath()));
         }
-        Logger.debug(this, "Finished.");
     }
 
 }
