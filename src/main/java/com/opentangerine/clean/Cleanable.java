@@ -54,10 +54,10 @@ public interface Cleanable {
 
         /**
          * Ctor.
-         * @param mode Mode.
+         * @param cdelete Delete.
          */
-        public Maven(final Mode mode) {
-            this.delete = new Delete(mode);
+        public Maven(final Delete cdelete) {
+            this.delete = cdelete;
         }
 
         @Override
@@ -80,10 +80,10 @@ public interface Cleanable {
 
         /**
          * Ctor.
-         * @param mode Mode.
+         * @param cdelete Delete.
          */
-        public Yclean(final Mode mode) {
-            this.delete = new Delete(mode);
+        public Yclean(final Delete cdelete) {
+            this.delete = cdelete;
         }
 
         @Override
