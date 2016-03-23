@@ -75,7 +75,7 @@ public final class Yconfig {
         return Stream.concat(
             Arrays.stream(scanner.getIncludedDirectories()),
             Arrays.stream(scanner.getIncludedFiles())
-        ).map(it -> path.resolve(it));
+        ).map(path::resolve);
     }
 
     /**
