@@ -28,6 +28,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * User interface.
@@ -50,10 +51,19 @@ public final class Console {
     public void help() {
         final String path = "/ot-clean/help.txt";
         try {
-            this.out.append(
-                IOUtils.toString(getClass().getResourceAsStream(path))
+            final String version = IOUtils.toString(
+                getClass().getResourceAsStream("/version.txt")
             );
-            this.out.println();
+            // FIXME GG: in progress, add another method that is going to do this better
+            // FIXME GG: in progress, add test case for this
+            // FIXME GG: in progress, cleanup
+            final String output = new Replace(IOUtils.toString(getClass().getResourceAsStream(path))).replace(
+                it -> it.contains("{{version}}"),
+                it -> StringUtils.replace(it, "{{version}}", version)
+            ).output();
+            this.out.append(
+                output
+            );
             this.out.flush();
         } catch (final IOException exc) {
             throw new IllegalArgumentException(

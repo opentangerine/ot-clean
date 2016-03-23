@@ -6,17 +6,18 @@
 
 ********************************************************************************
 
-- Supported arguments:
+          Supported arguments
 
 -d      - By default no directories are going to be deleted. You have to provide
           this argument if you really want to delete them.
 -r      - By default application is going to clean garbage from current
           directory only. If you want to search nested directories, use -r
 
-- About:
+          About
 
-author  - Grzegorz Gajos (ggajos.com)
-source  - https://github.com/ggajos/ot-clean
-sponsor - Open Tangerine (opentangerine.com)
+Version - {{version}}
+Author  - Grzegorz Gajos (ggajos.com)
+Source  - https://github.com/ggajos/ot-clean
+Sponsor - Open Tangerine (opentangerine.com)
 
 ********************************************************************************

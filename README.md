@@ -86,6 +86,7 @@ You can see list of all supported arguments for current version [here](https://g
 * ✓ 0.4 - Support wildcards
 * ✓ 0.5 - Preprocess Yaml file so double quotes are no longer needed.
 * ✓ 0.6 - Add summary about deleted files, dirs and empty total space.
+* ✓ 0.7 - Add application version automatically from maven project. 
 
 ### Backlog
 
