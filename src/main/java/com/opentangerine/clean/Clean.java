@@ -37,12 +37,6 @@ import java.util.Arrays;
  * @since 0.5
  */
 public final class Clean implements Cleanable {
-
-    /**
-     * Cleaning mode.
-     */
-    private final transient Mode mode;
-
     /**
      * Cleaners.
      */
@@ -65,14 +59,13 @@ public final class Clean implements Cleanable {
     /**
      * Ctor.
      *
-     * @param cmode Mode.
+     * @param mode Mode.
      */
-    public Clean(final Mode cmode) {
-        this.mode = cmode;
-        this.summary = new Summary(this.mode);
+    public Clean(final Mode mode) {
+        this.summary = new Summary(mode);
         this.cleaners = Arrays.asList(
-            new Cleanable.Maven(new Delete(this.mode, this.summary)),
-            new Yclean(new Delete(this.mode, this.summary))
+            new Cleanable.Maven(new Delete(mode, this.summary)),
+            new Yclean(new Delete(mode, this.summary))
         );
     }
 
@@ -82,7 +75,6 @@ public final class Clean implements Cleanable {
      * @param args Application arguments.
      */
     public static void main(final String... args) {
-        new Console().help();
         final Path path = Paths.get(System.getProperty("user.dir"));
         new Clean(args).clean(path);
         Logger.info(Clean.class, path.toString());

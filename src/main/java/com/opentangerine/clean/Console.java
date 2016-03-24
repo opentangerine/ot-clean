@@ -46,12 +46,27 @@ public final class Console {
 
     /**
      * Display help file.
+     *
+     * @return Return self for easy chaining.
      */
-    public void help() {
-        this.out.append(
+    public Console help() {
+        this.print(
             new Replace(this.resource("/ot-clean/help.txt")).output()
         );
+        return this;
+    }
+
+    /**
+     * Display line to user.
+     *
+     * @param line String line.
+     * @return Return self for easy chaining.
+     */
+    public Console print(final String line) {
+        this.out.print(line);
+        this.out.println();
         this.out.flush();
+        return this;
     }
 
     /**
