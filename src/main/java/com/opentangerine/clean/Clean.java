@@ -101,11 +101,9 @@ public final class Clean implements Cleanable {
      */
     private void recurrence(final Path path) {
         this.cleaners.forEach(it -> it.clean(path));
-        if (this.mode.recurrence()) {
-            Arrays
-                .stream(path.toFile().listFiles(File::isDirectory))
-                .forEach(it -> this.recurrence(it.toPath()));
-        }
+        Arrays
+            .stream(path.toFile().listFiles(File::isDirectory))
+            .forEach(it -> this.recurrence(it.toPath()));
     }
 
 }
