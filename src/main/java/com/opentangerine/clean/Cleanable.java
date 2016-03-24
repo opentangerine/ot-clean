@@ -43,6 +43,22 @@ public interface Cleanable {
     void clean(final Path path);
 
     /**
+     * Display information about matching configuration.
+     *
+     * @param path Working directory.
+     * @param console Console.
+     */
+    void display(final Path path, final Console console);
+
+    /**
+     * Check if matching.
+     *
+     * @param path Working directory.
+     * @return True if cleanable.
+     */
+    boolean match(final Path path);
+
+    /**
      * Cleanup maven structure.
      */
     final class Maven implements Cleanable {
@@ -62,9 +78,23 @@ public interface Cleanable {
 
         @Override
         public void clean(final Path path) {
-            if (path.resolve("pom.xml").toFile().exists()) {
+            if (this.match(path)) {
                 this.delete.file(path.resolve("target"));
             }
+        }
+
+        @Override
+        public boolean match(final Path path) {
+            return path.resolve("pom.xml").toFile().exists();
+        }
+
+        @Override
+        public void display(final Path path, final Console console) {
+            console.print(
+                String.format(
+                    "[Maven]: %s", path
+                )
+            );
         }
     }
 
@@ -88,13 +118,36 @@ public interface Cleanable {
 
         @Override
         public void clean(final Path path) {
-            final File file = path.resolve(".clean.yml").toFile();
-            if (file.exists()) {
+            if (this.match(path)) {
                 Yconfig
-                    .load(file)
+                    .load(Yclean.file(path))
                     .filesToDelete(path)
                     .forEach(this.delete::file);
             }
+        }
+
+        @Override
+        public boolean match(final Path path) {
+            return Yclean.file(path).exists();
+        }
+
+        @Override
+        public void display(final Path path, final Console console) {
+            console.print(
+                String.format(
+                    "[.clean.yml]: %s", path
+                )
+            );
+        }
+
+        /**
+         * Returns configuration file.
+         *
+         * @param path Working directory.
+         * @return Clean yml file.
+         */
+        private static File file(final Path path) {
+            return path.resolve(".clean.yml").toFile();
         }
 
     }

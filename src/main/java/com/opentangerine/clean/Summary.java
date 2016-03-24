@@ -71,7 +71,7 @@ public final class Summary {
         this.total += FileUtils.sizeOf(file);
         this.console.print(
             String.format(
-                " • %s %s '%s' [%s]",
+                " - %s %s: %s [%s]",
                 Summary.info(this.mode.readonly(), "Found", "Deleting"),
                 Summary.info(file.isDirectory(), "directory", "file"),
                 file,
@@ -84,9 +84,10 @@ public final class Summary {
      * Display summary based on current state.
      */
     public void finished() {
+        this.console.print("");
         this.console.print(
             String.format(
-                " Σ Found %s element(s) [%s]",
+                "Summary: Found %s element(s) [%s]",
                 this.count,
                 FileUtils.byteCountToDisplaySize(this.total)
             )

@@ -23,7 +23,6 @@
  */
 package com.opentangerine.clean;
 
-import com.jcabi.log.Logger;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,7 +35,7 @@ import java.util.Arrays;
  * @version $Id$
  * @since 0.5
  */
-public final class Clean implements Cleanable {
+public final class Clean {
     /**
      * Cleaners.
      */
@@ -65,7 +64,7 @@ public final class Clean implements Cleanable {
         this.summary = new Summary(mode);
         this.cleaners = Arrays.asList(
             new Cleanable.Maven(new Delete(mode, this.summary)),
-            new Yclean(new Delete(mode, this.summary))
+            new Cleanable.Yclean(new Delete(mode, this.summary))
         );
     }
 
@@ -75,12 +74,14 @@ public final class Clean implements Cleanable {
      * @param args Application arguments.
      */
     public static void main(final String... args) {
-        final Path path = Paths.get(System.getProperty("user.dir"));
-        new Clean(args).clean(path);
-        Logger.info(Clean.class, path.toString());
+        new Clean(args).clean(Paths.get(System.getProperty("user.dir")));
     }
 
-    @Override
+    /**
+     * Start cleanup on specific path.
+     *
+     * @param path Working directory.
+     */
     public void clean(final Path path) {
         this.recurrence(path);
         this.summary.finished();
@@ -92,7 +93,14 @@ public final class Clean implements Cleanable {
      * @param path Current path.
      */
     private void recurrence(final Path path) {
-        this.cleaners.forEach(it -> it.clean(path));
+        this.cleaners.forEach(
+            it -> {
+                if (it.match(path)) {
+                    it.display(path, new Console());
+                    it.clean(path);
+                }
+            }
+        );
         Arrays
             .stream(path.toFile().listFiles(File::isDirectory))
             .forEach(it -> this.recurrence(it.toPath()));

@@ -23,6 +23,7 @@
  */
 package com.opentangerine.clean;
 
+import com.jcabi.log.Logger;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -79,6 +80,7 @@ public final class Console {
         try {
             return IOUtils.toString(getClass().getResourceAsStream(path));
         } catch (final IOException exc) {
+            Logger.error(this, "Fatal error", exc);
             throw new IllegalStateException(
                 String.format("Unable to read resource: %s", path), exc
             );
