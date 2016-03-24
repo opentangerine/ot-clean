@@ -28,7 +28,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * User interface.
@@ -49,25 +48,26 @@ public final class Console {
      * Display help file.
      */
     public void help() {
-        final String path = "/ot-clean/help.txt";
+        this.out.append(
+            new Replace(this.resource("/ot-clean/help.txt"))
+                .replace("{{version}}", this.resource("/version.txt"))
+                .output()
+        );
+        this.out.flush();
+    }
+
+    /**
+     * Return content of the resource.
+     *
+     * @param path Resource path.
+     * @return Content.
+     */
+    private String resource(final String path) {
         try {
-            final String version = IOUtils.toString(
-                getClass().getResourceAsStream("/version.txt")
-            );
-            // FIXME GG: in progress, add another method that is going to do this better
-            // FIXME GG: in progress, add test case for this
-            // FIXME GG: in progress, cleanup
-            final String output = new Replace(IOUtils.toString(getClass().getResourceAsStream(path))).replace(
-                it -> it.contains("{{version}}"),
-                it -> StringUtils.replace(it, "{{version}}", version)
-            ).output();
-            this.out.append(
-                output
-            );
-            this.out.flush();
+            return IOUtils.toString(getClass().getResourceAsStream(path));
         } catch (final IOException exc) {
-            throw new IllegalArgumentException(
-                "Unable to file readme file", exc
+            throw new IllegalStateException(
+                String.format("Unable to read resource: %s", path), exc
             );
         }
     }
