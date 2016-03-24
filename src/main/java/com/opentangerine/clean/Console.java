@@ -49,9 +49,7 @@ public final class Console {
      */
     public void help() {
         this.out.append(
-            new Replace(this.resource("/ot-clean/help.txt"))
-                .replace("{{version}}", this.resource("/version.txt"))
-                .output()
+            new Replace(this.resource("/ot-clean/help.txt")).output()
         );
         this.out.flush();
     }

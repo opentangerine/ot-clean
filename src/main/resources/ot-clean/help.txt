@@ -15,7 +15,7 @@
 
           About
 
-Version - {{version}}
+Version - ${project.version}
 Source  - github.com/ggajos/ot-clean
 Author  - Grzegorz Gajos / ggajos.com
 Sponsor - Open Tangerine / opentangerine.com
