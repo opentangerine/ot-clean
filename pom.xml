@@ -54,7 +54,6 @@
         </dependency>
     </dependencies>
     <build>
-        <!--// FIXME GG: in progress, add to blog post-->
         <resources>
             <resource>
                 <directory>src/main/resources</directory>

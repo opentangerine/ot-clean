@@ -25,6 +25,7 @@ package com.opentangerine.clean;
 
 import java.util.Scanner;
 import java.util.function.Function;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrBuilder;
 
 /**
@@ -74,6 +75,20 @@ public final class Replace {
             }
         }
         return new Replace(out.build());
+    }
+
+    /**
+     * Find specific pattern and replace with provided value.
+     *
+     * @param pattern Pattern that should be replaced.
+     * @param value Value that should be used for replacement.
+     * @return Replace object.
+     */
+    public Replace replace(final String pattern, final String value) {
+        return this.replace(
+            it -> it.contains(pattern),
+            it -> StringUtils.replace(it, pattern, value)
+        );
     }
 
     /**
