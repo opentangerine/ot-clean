@@ -54,6 +54,21 @@ public final class ReplaceTest {
     }
 
     /**
+     * Check pattern replace when input matches.
+     */
+    @Test
+    public void matchingSimplePattern() {
+        MatcherAssert.assertThat(
+            new Replace("+input")
+                .replace(
+                    "put",
+                    "--"
+                ).output(),
+            Matchers.equalToIgnoringWhiteSpace("+in--")
+        );
+    }
+
+    /**
      * Check replace when input does not match.
      */
     @Test

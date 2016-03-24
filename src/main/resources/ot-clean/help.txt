@@ -1,18 +1,23 @@
-******************************************************************* ot-clean ***
+********************************************************************************
     ___ _____     ___ _    ___   _   _  _
    / _ \_   _|__ / __| |  | __| /_\ | \| |
   | (_) || ||___| (__| |__| _| / _ \| .` |
    \___/ |_|     \___|____|___/_/ \_\_|\_|
 
-Supported arguments
+********************************************************************************
 
--d      - By default no directories are going to be deleted. You have to provide this argument
-          if you really want to delete them.
+          Supported arguments
+
+-d      - By default no directories are going to be deleted. You have to provide
+          this argument if you really want to delete them.
 -r      - By default application is going to clean garbage from current
           directory only. If you want to search nested directories, use -r
 
-About
-author  - developed by Grzegorz Gajos (ggajos.com)
-source  - source: https://github.com/ggajos/ot-clean
+          About
+
+Version - {{version}}
+Source  - github.com/ggajos/ot-clean
+Author  - Grzegorz Gajos / ggajos.com
+Sponsor - Open Tangerine / opentangerine.com
 
 ********************************************************************************

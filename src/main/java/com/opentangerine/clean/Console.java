@@ -48,16 +48,26 @@ public final class Console {
      * Display help file.
      */
     public void help() {
-        final String path = "/ot-clean/help.txt";
+        this.out.append(
+            new Replace(this.resource("/ot-clean/help.txt"))
+                .replace("{{version}}", this.resource("/version.txt"))
+                .output()
+        );
+        this.out.flush();
+    }
+
+    /**
+     * Return content of the resource.
+     *
+     * @param path Resource path.
+     * @return Content.
+     */
+    private String resource(final String path) {
         try {
-            this.out.append(
-                IOUtils.toString(getClass().getResourceAsStream(path))
-            );
-            this.out.println();
-            this.out.flush();
+            return IOUtils.toString(getClass().getResourceAsStream(path));
         } catch (final IOException exc) {
-            throw new IllegalArgumentException(
-                "Unable to file readme file", exc
+            throw new IllegalStateException(
+                String.format("Unable to read resource: %s", path), exc
             );
         }
     }
