@@ -5,4 +5,4 @@ cache:
   directories:
     - $HOME/.m2
 script:
-  - mvn clean install -Pqulice,cobertura --batch-mode --errors
+  - mvn clean install -Pqulice,coverage coveralls:report --batch-mode --errors
