@@ -215,20 +215,9 @@
             </build>
         </profile>
         <profile>
-            <id>travis</id>
-            <activation>
-                <property>
-                    <name>env.TRAVIS</name>
-                    <value>true</value>
-                </property>
-            </activation>
+            <id>coveralls</id>
             <build>
                 <plugins>
-                    <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.7.6.201602180812</version>
-                    </plugin>
                     <plugin>
                         <groupId>org.eluder.coveralls</groupId>
                         <artifactId>coveralls-maven-plugin</artifactId>

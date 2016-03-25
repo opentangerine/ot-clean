@@ -3,6 +3,6 @@ cache:
   directories:
     - $HOME/.m2
 script:
-  - mvn clean install -Pqulice,cobertura --errors
+  - mvn clean install -Pqulice,cobertura,coveralls --errors
 jdk:
   - oraclejdk8
