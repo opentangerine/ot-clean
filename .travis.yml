@@ -7,4 +7,4 @@ cache:
 script:
   - mvn clean install -Pqulice,cobertura,coveralls --errors
 after_success:
-  - mvn clean cobertura:cobertura coveralls:report
+  - mvn clean install -Pcobertura coveralls:report
