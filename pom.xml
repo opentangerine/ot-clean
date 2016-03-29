@@ -6,12 +6,12 @@
     <parent>
         <groupId>com.jcabi</groupId>
         <artifactId>parent</artifactId>
-        <version>0.42</version>
+        <version>0.43</version>
     </parent>
 
     <groupId>com.opentangerine.clean</groupId>
     <artifactId>ot-clean</artifactId>
-    <version>0.7</version>
+    <version>0.8</version>
 
     <properties>
         <hibernate.validator>5.0.0.Final</hibernate.validator>
@@ -59,15 +59,8 @@
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>**/version.txt</include>
+                    <include>**/help.txt</include>
                 </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>false</filtering>
-                <excludes>
-                    <exclude>**/version.txt</exclude>
-                </excludes>
             </resource>
         </resources>
         <plugins>
@@ -152,35 +145,59 @@
                     </fileSets>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <check>
+                        <haltOnFailure>true</haltOnFailure>
+                        <branchRate>50</branchRate>
+                        <lineRate>70</lineRate>
+                        <packageBranchRate>50</packageBranchRate>
+                        <packageLineRate>70</packageLineRate>
+                        <totalBranchRate>50</totalBranchRate>
+                        <totalLineRate>70</totalLineRate>
+                    </check>
+                    <format>xml</format>
+                    <maxmem>256m</maxmem>
+                    <aggregate>true</aggregate>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <profiles>
         <profile>
-            <id>cobertura</id>
+            <id>coverage</id>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>cobertura-maven-plugin</artifactId>
-                        <configuration>
-                            <check>
-                                <haltOnFailure>true</haltOnFailure>
-                                <branchRate>50</branchRate>
-                                <lineRate>70</lineRate>
-                                <packageBranchRate>50</packageBranchRate>
-                                <packageLineRate>70</packageLineRate>
-                                <totalBranchRate>50</totalBranchRate>
-                                <totalLineRate>70</totalLineRate>
-                            </check>
-                        </configuration>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>0.7.6.201602180812</version>
                         <executions>
                             <execution>
+                                <id>default-prepare-agent</id>
                                 <goals>
-                                    <goal>clean</goal>
-                                    <goal>check</goal>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>default-report</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>report</goal>
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.eluder.coveralls</groupId>
+                        <artifactId>coveralls-maven-plugin</artifactId>
+                        <version>4.1.0</version>
+                        <configuration>
+                            <timestampFormat>yyyy-MM-dd'T'HH:mm:ss</timestampFormat>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

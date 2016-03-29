@@ -43,9 +43,7 @@ public final class ModeTest {
     @Test
     public void canRecognizeSingleArguments() {
         MatcherAssert.assertThat(new Mode("d").readonly(), Matchers.is(false));
-        MatcherAssert.assertThat(new Mode("r").recurrence(), Matchers.is(true));
         MatcherAssert.assertThat(new Mode().readonly(), Matchers.is(true));
-        MatcherAssert.assertThat(new Mode().recurrence(), Matchers.is(false));
     }
 
     /**
@@ -56,6 +54,5 @@ public final class ModeTest {
     public void canRecognizeCombinedArguments() {
         final Mode mode = new Mode("-dr");
         MatcherAssert.assertThat(mode.readonly(), Matchers.is(false));
-        MatcherAssert.assertThat(mode.recurrence(), Matchers.is(true));
     }
 }

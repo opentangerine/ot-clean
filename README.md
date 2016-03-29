@@ -1,6 +1,7 @@
 ## Status
 
 [![Build Status](https://travis-ci.org/ggajos/ot-clean.svg?branch=master)](https://travis-ci.org/ggajos/ot-clean)
+[![Coverage Status](https://coveralls.io/repos/github/ggajos/ot-clean/badge.svg?branch=master)](https://coveralls.io/github/ggajos/ot-clean?branch=master)
 
 ## Motivation
 
@@ -86,12 +87,11 @@ You can see list of all supported arguments for current version [here](https://g
 * ✓ 0.4 - Support wildcards
 * ✓ 0.5 - Preprocess Yaml file so double quotes are no longer needed.
 * ✓ 0.6 - Add summary about deleted files, dirs and empty total space.
-* ✓ 0.7 - Add application version automatically from maven project. 
+* ✓ 0.7 - Add application version automatically from maven project.
+* ✓ 0.8 - Removed recurrence parameter `r`, cleanup, added coveralls
+*   0.9 - Add support for multiple base dirs (`dirs:` section)
 
 ### Backlog
 
-* Add support for multiple base dirs (`dirs:` section)
-* Add support of default arguments (`args:` section)
-* At the end of the scanning without `d` argument, ask user if he wants to delete those files.
 * Add linux script
 * Add exclude support

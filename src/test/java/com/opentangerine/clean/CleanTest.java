@@ -77,7 +77,6 @@ public final class CleanTest {
      */
     @Test
     public void noExceptionOnEmptyDir() {
-        new Console().help();
         new Clean("").clean(Paths.get(this.folder.getRoot().toURI()));
     }
 
@@ -216,7 +215,9 @@ public final class CleanTest {
             Matchers.is(true)
         );
         final Mode mode = new Mode("d");
-        new Cleanable.Yclean(new Delete(mode, new Summary(mode))).clean(root);
+        new Cleanable.Yclean(
+            new Delete(mode, new Summary(mode))
+        ).clean(root);
         MatcherAssert.assertThat(
             root.resolve(CleanTest.SIMPLE_TXT).toFile().exists(),
             Matchers.is(!deleted)

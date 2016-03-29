@@ -57,14 +57,6 @@ public final class Mode {
     }
 
     /**
-     * Is recurrence mode.
-     * @return True if recurrence
-     */
-    public boolean recurrence() {
-        return Arg.R.within(this.arguments);
-    }
-
-    /**
      * Enumeration of allowed program arguments.
      */
     public enum Arg {

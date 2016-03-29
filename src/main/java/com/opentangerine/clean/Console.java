@@ -23,6 +23,7 @@
  */
 package com.opentangerine.clean;
 
+import com.jcabi.log.Logger;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -46,14 +47,27 @@ public final class Console {
 
     /**
      * Display help file.
+     *
+     * @return Return self for easy chaining.
      */
-    public void help() {
-        this.out.append(
-            new Replace(this.resource("/ot-clean/help.txt"))
-                .replace("{{version}}", this.resource("/version.txt"))
-                .output()
+    public Console help() {
+        this.print(
+            new Replace(this.resource("/ot-clean/help.txt")).output()
         );
+        return this;
+    }
+
+    /**
+     * Display line to user.
+     *
+     * @param line String line.
+     * @return Return self for easy chaining.
+     */
+    public Console print(final String line) {
+        this.out.print(line);
+        this.out.println();
         this.out.flush();
+        return this;
     }
 
     /**
@@ -66,6 +80,7 @@ public final class Console {
         try {
             return IOUtils.toString(getClass().getResourceAsStream(path));
         } catch (final IOException exc) {
+            Logger.error(this, "Fatal error", exc);
             throw new IllegalStateException(
                 String.format("Unable to read resource: %s", path), exc
             );

@@ -1,8 +1,8 @@
 language: java
+jdk:
+  - oraclejdk8
 cache:
   directories:
     - $HOME/.m2
 script:
-  - mvn clean install -Pqulice,cobertura --errors
-jdk:
-  - oraclejdk8
+  - mvn clean install -Pqulice,coverage coveralls:report --batch-mode --errors

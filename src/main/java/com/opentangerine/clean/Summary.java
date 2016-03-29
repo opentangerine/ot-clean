@@ -23,7 +23,6 @@
  */
 package com.opentangerine.clean;
 
-import com.jcabi.log.Logger;
 import java.io.File;
 import org.apache.commons.io.FileUtils;
 
@@ -41,6 +40,10 @@ public final class Summary {
      */
     private final transient Mode mode;
     /**
+     * Output console.
+     */
+    private final transient Console console;
+    /**
      * Total bytes.
      */
     private transient long total;
@@ -54,6 +57,7 @@ public final class Summary {
      * @param cmode Execution mode.
      */
     public Summary(final Mode cmode) {
+        this.console = new Console().help();
         this.mode = cmode;
     }
 
@@ -65,13 +69,14 @@ public final class Summary {
     public void add(final File file) {
         this.count += 1;
         this.total += FileUtils.sizeOf(file);
-        Logger.info(
-            this,
-            "%s %s '%s' [%s]",
-            Summary.info(this.mode.readonly(), "Found", "Deleting"),
-            Summary.info(file.isDirectory(), "directory", "file"),
-            file,
-            FileUtils.byteCountToDisplaySize(FileUtils.sizeOf(file))
+        this.console.print(
+            String.format(
+                " - %s %s: %s [%s]",
+                Summary.info(this.mode.readonly(), "Found", "Deleting"),
+                Summary.info(file.isDirectory(), "directory", "file"),
+                file,
+                FileUtils.byteCountToDisplaySize(FileUtils.sizeOf(file))
+            )
         );
     }
 
@@ -79,11 +84,13 @@ public final class Summary {
      * Display summary based on current state.
      */
     public void finished() {
-        Logger.info(
-            this,
-            "Found %s element(s) [%s]",
-            this.count,
-            FileUtils.byteCountToDisplaySize(this.total)
+        this.console.print("");
+        this.console.print(
+            String.format(
+                "Summary: Found %s element(s) [%s]",
+                this.count,
+                FileUtils.byteCountToDisplaySize(this.total)
+            )
         );
     }
 
