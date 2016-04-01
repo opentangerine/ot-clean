@@ -23,6 +23,7 @@
  */
 package com.opentangerine.clean;
 
+import com.jcabi.log.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -51,11 +52,33 @@ public final class Yconfig {
     private transient List<String> deletes = Collections.emptyList();
 
     /**
+     * List of directories to crawl.
+     */
+    private transient List<String> dirs = Collections.emptyList();
+
+    /**
      * Setter. This method is used by Yaml mapper only.
      * @param sdeletes Values.
      */
     public void setDeletes(final List<String> sdeletes) {
         this.deletes = sdeletes;
+    }
+
+    /**
+     * Setter. This method is used by Yaml mapper only.
+     * @param sdirectories Values.
+     */
+    public void setDirs(final List<String> sdirectories) {
+        this.dirs = sdirectories;
+    }
+
+    /**
+     * Return directories.
+     * @return Paths.
+     */
+    public Stream<Path> dirs() {
+        return this.dirs.stream()
+            .map(it -> new File(it).toPath());
     }
 
     /**
@@ -65,10 +88,12 @@ public final class Yconfig {
      * @return Stream of files.
      */
     public Stream<Path> filesToDelete(final Path path) {
+        Logger.debug(this, "Scanner: %s", path);
         final DirectoryScanner scanner = new DirectoryScanner();
         scanner.setIncludes(
             this.deletes.toArray(new String[this.deletes.size()])
         );
+        Logger.debug(this, "- deletes: %s", this.deletes);
         scanner.setBasedir(path.toFile());
         scanner.setCaseSensitive(false);
         scanner.scan();
@@ -85,36 +110,38 @@ public final class Yconfig {
      * @return Config Object.
      */
     public static Yconfig load(final File file) {
+        Yconfig config = new Yconfig();
+        if (file.exists()) {
+            config = Optional.ofNullable(
+                new Yaml().loadAs(preprocess(file), Yconfig.class)
+            ).orElse(config);
+        }
+        return config;
+    }
+
+    /**
+     * Preprocess input file and append double quotes for all paths in the file.
+     *
+     * @param file File.
+     * @return Preprocessed file.
+     */
+    private static String preprocess(final File file) {
         try {
-            return Optional.ofNullable(
-                new Yaml().loadAs(
-                    preprocess(FileUtils.readFileToString(file)),
-                    Yconfig.class
+            final String text = FileUtils.readFileToString(file);
+            final String pattern = "- *";
+            return new Replace(text).replace(
+                line -> line.contains(pattern),
+                line -> StringUtils.join(
+                    StringUtils.replace(line, pattern, "- \"*"),
+                    "\""
                 )
-            ).orElse(new Yconfig());
+            ).output();
         } catch (final IOException exc) {
             throw new IllegalStateException(
                 "Unable to read config file",
                 exc
             );
         }
-    }
-
-    /**
-     * Preprocess input file and append double quotes for all paths in the file.
-     *
-     * @param text Input text.
-     * @return Preprocessed file.
-     */
-    private static String preprocess(final String text) {
-        final String pattern = "- *";
-        return new Replace(text).replace(
-            line -> line.contains(pattern),
-            line -> StringUtils.join(
-                StringUtils.replace(line, pattern, "- \"*"),
-                "\""
-            )
-        ).output();
     }
 
 }
