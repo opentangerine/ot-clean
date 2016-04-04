@@ -102,9 +102,12 @@ public final class Clean {
                 this.jump(path);
             }
         );
-        Arrays
-            .stream(path.toFile().listFiles(File::isDirectory))
-            .forEach(it -> this.recurrence(it.toPath()));
+        final File[] files = path.toFile().listFiles(File::isDirectory);
+        if (files != null) {
+            Arrays
+                .stream(files)
+                .forEach(it -> this.recurrence(it.toPath()));
+        }
     }
 
     /**
