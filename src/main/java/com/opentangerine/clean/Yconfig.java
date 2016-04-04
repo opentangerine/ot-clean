@@ -44,6 +44,7 @@ import org.yaml.snakeyaml.Yaml;
  * @version $Id$
  * @since 0.5
  */
+@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
 public final class Yconfig {
 
     /**

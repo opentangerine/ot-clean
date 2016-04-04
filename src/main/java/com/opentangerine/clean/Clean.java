@@ -114,7 +114,6 @@ public final class Clean {
      */
     private void jump(final Path path) {
         Yconfig
-            // FIXME GG: in progress, let's add new method in Yconfig to scal for this specific file
             .load(path.resolve(".clean.yml").toFile())
             .dirs().forEach(this::recurrence);
     }
