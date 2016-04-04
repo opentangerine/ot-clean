@@ -1,3 +1,5 @@
 deletes:
   - ./target
   - ./unknown and not existing file.txt
+dirs:
+  - ./check

@@ -25,8 +25,6 @@ package com.opentangerine.clean;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -76,9 +74,7 @@ public final class YconfigTest {
     @Test
     public void fullFile() throws IOException {
         final Yconfig config = Yconfig.load(this.example("test-full.yml"));
-        config
-            .filesToDelete(Paths.get("."))
-            .toArray(it -> new Path[0]);
+        MatcherAssert.assertThat(config.dirs().count(), Matchers.is(1L));
         MatcherAssert.assertThat(config, Matchers.notNullValue());
     }
 

@@ -141,6 +141,37 @@ public final class CleanTest {
     }
 
     /**
+     * Execute cleanup from sibling directory using dirs section.
+     */
+    @Test
+    public void cleanupProjectStartingFromDifferentDirectory() {
+        final String one = "one";
+        final String two = "two";
+        final Path root = this.folder.getRoot().toPath();
+        this.tempFile(root.resolve("one/todelete/file1.txt"));
+        this.tempFile(root.resolve("two/file2.txt"));
+        this.writeYml(root.resolve(one), "deletes:\n - todelete");
+        this.writeYml(
+            root.resolve(two),
+            StringUtils.join(
+                "dirs:\n - '",
+                root.resolve(one).toFile().getAbsolutePath(),
+                "'"
+            )
+        );
+        final Mode mode = new Mode(Mode.Arg.D.getLabel());
+        MatcherAssert.assertThat(
+            root.resolve("one/todelete").toFile().isDirectory(),
+            Matchers.is(true)
+        );
+        new Clean(mode).clean(root.resolve(two));
+        MatcherAssert.assertThat(
+            root.resolve("one/target").toFile().isDirectory(),
+            Matchers.is(false)
+        );
+    }
+
+    /**
      * Wildcard testing: Check extension.
      */
     @Test
@@ -261,33 +292,32 @@ public final class CleanTest {
      * @return Temp directory of maven project.
      */
     private Path createProject() {
-        try {
-            final Path root = this.folder.getRoot().toPath();
-            this.tempFile(root.resolve("pom.xml"));
-            this.tempFile(root.resolve("target/file.txt"));
-            this.tempFile(root.resolve("target/file2.txt"));
-            this.tempFile(root.resolve("subdir/target/file2.txt"));
-            this.tempFile(root.resolve("subdir/pom.xml"));
-            this.tempFile(root.resolve(CleanTest.SIMPLE_TXT));
-            return root;
-        } catch (final IOException exc) {
-            throw new IllegalStateException(
-                "Unable to create maven project structure",
-                exc
-            );
-        }
+        final Path root = this.folder.getRoot().toPath();
+        this.tempFile(root.resolve("pom.xml"));
+        this.tempFile(root.resolve("target/file.txt"));
+        this.tempFile(root.resolve("target/file2.txt"));
+        this.tempFile(root.resolve("subdir/target/file2.txt"));
+        this.tempFile(root.resolve("subdir/pom.xml"));
+        this.tempFile(root.resolve(CleanTest.SIMPLE_TXT));
+        return root;
     }
 
     /**
      * Create temporary file with dummy date. Skip if file is directory.
      *
      * @param path Target path.
-     * @throws IOException Unknown IO Exception.
      */
-    private void tempFile(final Path path) throws IOException {
-        FileUtils.touch(path.toFile());
-        if (!path.toFile().isDirectory()) {
-            FileUtils.writeStringToFile(path.toFile(), "two\blines");
+    private void tempFile(final Path path) {
+        try {
+            FileUtils.touch(path.toFile());
+            if (!path.toFile().isDirectory()) {
+                FileUtils.writeStringToFile(path.toFile(), "two\blines");
+            }
+        } catch (final IOException exc) {
+            throw new IllegalStateException(
+                "Unable to create maven project structure",
+                exc
+            );
         }
     }
 

@@ -99,11 +99,26 @@ public final class Clean {
                     it.display(path, new Console());
                     it.clean(path);
                 }
+                this.jump(path);
             }
         );
-        Arrays
-            .stream(path.toFile().listFiles(File::isDirectory))
-            .forEach(it -> this.recurrence(it.toPath()));
+        final File[] files = path.toFile().listFiles(File::isDirectory);
+        if (files != null) {
+            Arrays
+                .stream(files)
+                .forEach(it -> this.recurrence(it.toPath()));
+        }
+    }
+
+    /**
+     * Check if configuration of clean defines dirs section and crawler
+     * should jump to different directory.
+     * @param path Working directory.
+     */
+    private void jump(final Path path) {
+        Yconfig
+            .load(path.resolve(".clean.yml").toFile())
+            .dirs().forEach(this::recurrence);
     }
 
 }
