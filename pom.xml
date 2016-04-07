@@ -35,6 +35,10 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
@@ -59,7 +63,7 @@
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>**/help.txt</include>
+                    <include>*</include>
                 </includes>
             </resource>
         </resources>
