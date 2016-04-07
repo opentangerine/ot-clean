@@ -25,7 +25,9 @@ package com.opentangerine.clean;
 
 import com.jcabi.log.Logger;
 import java.io.IOException;
+import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.Validate;
 
 /**
  * Resource loader.
@@ -37,6 +39,13 @@ import org.apache.commons.io.IOUtils;
 public final class Res {
 
     /**
+     * Private Ctor.
+     */
+    private Res() {
+        // Private
+    }
+
+    /**
      * Load resource under specific path.
      *
      * @param path Resource path.
@@ -44,9 +53,11 @@ public final class Res {
      */
     public static String resource(final String path) {
         try {
-            return IOUtils.toString(Res.class.getResourceAsStream(path));
-        } catch (final NullPointerException|IOException exc) {
-            Logger.error(Res.class, "Fatal error", exc);
+            final InputStream stream = Res.class.getResourceAsStream(path);
+            Validate.isTrue(stream != null, "File not found");
+            return IOUtils.toString(stream);
+        } catch (final IllegalArgumentException | IOException exc) {
+            Logger.error(Res.class, "Unable to read '%s'", path);
             throw new IllegalArgumentException(
                 String.format("Unable to read resource: %s", path), exc
             );

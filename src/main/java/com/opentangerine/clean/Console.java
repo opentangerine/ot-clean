@@ -23,12 +23,9 @@
  */
 package com.opentangerine.clean;
 
-import com.jcabi.log.Logger;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import org.apache.commons.io.IOUtils;
 
 /**
  * User interface.
