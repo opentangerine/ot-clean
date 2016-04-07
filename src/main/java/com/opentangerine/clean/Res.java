@@ -25,47 +25,32 @@ package com.opentangerine.clean;
 
 import com.jcabi.log.Logger;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
 
 /**
- * User interface.
+ * Resource loader.
  *
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
- * @since 0.5
+ * @since 0.10
  */
-public final class Console {
-    /**
-     * Output.
-     */
-    private final transient PrintWriter out = new PrintWriter(
-        new OutputStreamWriter(System.out, StandardCharsets.UTF_8)
-    );
+public final class Res {
 
     /**
-     * Display help file.
+     * Load resource under specific path.
      *
-     * @return Return self for easy chaining.
+     * @param path Resource path.
+     * @return Content.
      */
-    public Console help() {
-        this.print(Res.resource("/ot-clean/help.txt"));
-        return this;
-    }
-
-    /**
-     * Display line to user.
-     *
-     * @param line String line.
-     * @return Return self for easy chaining.
-     */
-    public Console print(final String line) {
-        this.out.print(line);
-        this.out.println();
-        this.out.flush();
-        return this;
+    public static String resource(final String path) {
+        try {
+            return IOUtils.toString(Res.class.getResourceAsStream(path));
+        } catch (final NullPointerException|IOException exc) {
+            Logger.error(Res.class, "Fatal error", exc);
+            throw new IllegalArgumentException(
+                String.format("Unable to read resource: %s", path), exc
+            );
+        }
     }
 
 }

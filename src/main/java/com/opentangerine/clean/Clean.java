@@ -23,6 +23,7 @@
  */
 package com.opentangerine.clean;
 
+import com.jcabi.log.Logger;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
