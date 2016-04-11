@@ -23,46 +23,45 @@
  */
 package com.opentangerine.clean;
 
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
+import com.jcabi.log.Logger;
+import java.io.IOException;
+import java.io.InputStream;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.Validate;
 
 /**
- * User interface.
+ * Resource loader.
  *
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
- * @since 0.5
+ * @since 0.10
  */
-public final class Console {
-    /**
-     * Output.
-     */
-    private final transient PrintWriter out = new PrintWriter(
-        new OutputStreamWriter(System.out, StandardCharsets.UTF_8)
-    );
+public final class Res {
 
     /**
-     * Display help file.
-     *
-     * @return Return self for easy chaining.
+     * Private Ctor.
      */
-    public Console help() {
-        this.print(Res.resource("/ot-clean/help.txt"));
-        return this;
+    private Res() {
+        // Private
     }
 
     /**
-     * Display line to user.
+     * Load resource under specific path.
      *
-     * @param line String line.
-     * @return Return self for easy chaining.
+     * @param path Resource path.
+     * @return Content.
      */
-    public Console print(final String line) {
-        this.out.print(line);
-        this.out.println();
-        this.out.flush();
-        return this;
+    public static String resource(final String path) {
+        try {
+            final InputStream stream = Res.class.getResourceAsStream(path);
+            Validate.isTrue(stream != null, "File not found");
+            return IOUtils.toString(stream);
+        } catch (final IllegalArgumentException | IOException exc) {
+            Logger.error(Res.class, "Unable to read '%s'", path);
+            throw new IllegalArgumentException(
+                String.format("Unable to read resource: %s", path), exc
+            );
+        }
     }
 
 }

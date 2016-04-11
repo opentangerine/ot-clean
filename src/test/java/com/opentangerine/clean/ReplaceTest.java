@@ -30,7 +30,7 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
- * Tests for {link Replace}.
+ * Tests for {@link Replace}.
  *
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$

@@ -23,46 +23,39 @@
  */
 package com.opentangerine.clean;
 
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
 /**
- * User interface.
+ * Tests for {@link Res}.
  *
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
- * @since 0.5
+ * @since 0.10
  */
-public final class Console {
-    /**
-     * Output.
-     */
-    private final transient PrintWriter out = new PrintWriter(
-        new OutputStreamWriter(System.out, StandardCharsets.UTF_8)
-    );
+public final class ResTest {
 
     /**
-     * Display help file.
-     *
-     * @return Return self for easy chaining.
+     * Res can load file from resources.
      */
-    public Console help() {
-        this.print(Res.resource("/ot-clean/help.txt"));
-        return this;
+    @Test
+    public void loadsExistingFile() {
+        MatcherAssert.assertThat(
+            Res.resource("/log4j.properties"),
+            Matchers.notNullValue()
+        );
     }
 
     /**
-     * Display line to user.
-     *
-     * @param line String line.
-     * @return Return self for easy chaining.
+     * Res can fail if file cannot be found.
      */
-    public Console print(final String line) {
-        this.out.print(line);
-        this.out.println();
-        this.out.flush();
-        return this;
+    @Test(expected = IllegalArgumentException.class)
+    public void failsIfFailNotFound() {
+        MatcherAssert.assertThat(
+            Res.resource("/unknownfile"),
+            Matchers.notNullValue()
+        );
     }
 
 }

@@ -18,7 +18,7 @@ to your `path`. You might want to read also [How to efficiently manage PATH vari
 
 ### .clean.yml
 
-You can create `.clean.yml` file and specify which files/dirs you would like to
+You can create **.clean.yml** file and specify which files/dirs you would like to
 delete. Similar to `.gitignore` concept but using well known `yml` file standard.
 
 ```
@@ -30,7 +30,7 @@ deletes:
 
 #### Wildcards support
 
-Under the hood .clean.yml is using [DirectoryScanner](https://maven.apache.org/shared/maven-shared-utils/apidocs/org/apache/maven/shared/utils/io/DirectoryScanner.html)
+Under the hood **.clean.yml** is using [DirectoryScanner](https://maven.apache.org/shared/maven-shared-utils/apidocs/org/apache/maven/shared/utils/io/DirectoryScanner.html)
 and is passing `deletes` list as inclusion pattern. You can specify paths with
 wildcards, for example:
 
@@ -61,6 +61,17 @@ extension you have to use `"**\*.log"`, please read below for more examples:
 
 from: [DirectoryScanner](https://maven.apache.org/shared/maven-shared-utils/apidocs/org/apache/maven/shared/utils/io/DirectoryScanner.html) 
 
+#### Multiple directories support
+
+You can specify directories in **dirs:** section. It means that you can execute
+cleaning in single place and clean unrelated directories. Example configuration
+might look like this:
+
+```
+dirs:
+ - c:/Users/ggajos/
+ - ../above/parent
+```
 
 #### Run
 
@@ -81,15 +92,16 @@ You can see list of all supported arguments for current version [here](https://g
 
 ### Versions
 
-* ✓ 0.1 - Clean maven project in current directory without using maven
-* ✓ 0.2 - Recurrence parameter `r`
-* ✓ 0.3 - Add support to delete custom directories via .clean.yml
-* ✓ 0.4 - Support wildcards
-* ✓ 0.5 - Preprocess Yaml file so double quotes are no longer needed.
-* ✓ 0.6 - Add summary about deleted files, dirs and empty total space.
-* ✓ 0.7 - Add application version automatically from maven project.
-* ✓ 0.8 - Removed recurrence parameter `r`, cleanup, added coveralls
-* ✓ 0.9 - Add support for multiple base dirs (`dirs:` section)
+* ✓ 0.1  - Clean maven project in current directory without using maven
+* ✓ 0.2  - Recurrence parameter `r`
+* ✓ 0.3  - Add support to delete custom directories via .clean.yml
+* ✓ 0.4  - Support wildcards
+* ✓ 0.5  - Preprocess Yaml file so double quotes are no longer needed.
+* ✓ 0.6  - Add summary about deleted files, dirs and empty total space.
+* ✓ 0.7  - Add application version automatically from maven project.
+* ✓ 0.8  - Removed recurrence parameter `r`, cleanup, added coveralls
+* ✓ 0.9  - Add support for multiple base dirs (`dirs:` section)
+* ✓ 0.10 - Fix log4j configuration, updated readme
 
 ### Backlog
 
