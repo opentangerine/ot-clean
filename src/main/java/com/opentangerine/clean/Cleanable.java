@@ -23,8 +23,12 @@
  */
 package com.opentangerine.clean;
 
+import com.google.common.collect.Lists;
+import com.jcabi.log.Logger;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
+import org.apache.commons.io.FileUtils;
 
 /**
  * This is initial class, should be changed to something else.
@@ -86,6 +90,65 @@ public interface Cleanable {
         @Override
         public boolean match(final Path path) {
             return path.resolve("pom.xml").toFile().exists();
+        }
+
+        @Override
+        public void display(final Path path, final Console console) {
+            console.print(
+                String.format(
+                    "[Maven]: %s", path
+                )
+            );
+        }
+    }
+
+    /**
+     * Cleanup Grails structure.
+     */
+    final class Grails2 implements Cleanable {
+
+        /**
+         * Delete operation.
+         */
+        private final Delete delete;
+
+        /**
+         * Ctor.
+         * @param cdelete Delete.
+         */
+        public Grails2(final Delete cdelete) {
+            this.delete = cdelete;
+        }
+
+        // FIXME GG: in progress, make it more dry
+        @Override
+        public void clean(final Path path) {
+            if (this.match(path)) {
+                Yconfig yconf = new Yconfig();
+                yconf.setDeletes(Lists.newArrayList("target", "**/*.log"));
+                yconf
+                    .filesToDelete(path)
+                    .forEach(this.delete::file);
+            }
+        }
+
+        // FIXME GG: in progress, extract to different method
+        // and cleanup
+        @Override
+        public boolean match(final Path path) {
+            boolean success;
+            final File file = path
+                .resolve("application.properties")
+                .toFile();
+            try {
+                success = file.exists() && FileUtils
+                    .readFileToString(file)
+                    .contains("app.grails.version");
+            } catch (IOException ioe) {
+                Logger.debug(this, "Unable to read %s %[exception]s", file, ioe);
+                success = false;
+            }
+            return success;
         }
 
         @Override

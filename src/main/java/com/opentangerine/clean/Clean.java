@@ -58,11 +58,15 @@ public final class Clean {
     /**
      * Ctor.
      *
+     * // FIXME GG: in progress, check if there is a way for smarter
+     * initialization of cleanables
+     *
      * @param mode Mode.
      */
     public Clean(final Mode mode) {
         this.summary = new Summary(mode);
         this.cleaners = Arrays.asList(
+            new Cleanable.Grails2(new Delete(mode, this.summary)),
             new Cleanable.Maven(new Delete(mode, this.summary)),
             new Cleanable.Yclean(new Delete(mode, this.summary))
         );

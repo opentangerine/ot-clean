@@ -37,6 +37,7 @@ import org.junit.rules.TemporaryFolder;
 /**
  * This is test suit for {@link Clean} class.
  *
+ * // FIXME GG: in progress split into smaller classes
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
  * @since 0.5
@@ -136,6 +137,45 @@ public final class CleanTest {
         ).clean(root);
         MatcherAssert.assertThat(
             target.toFile().isDirectory(),
+            Matchers.is(false)
+        );
+    }
+
+    /**
+     * Delete Grails 2.x project without any configuration.
+     */
+    @Test
+    public void deleteGrails2ProjectWithoutAnyConfiguration() {
+        final Path root = this.createGrails2();
+        MatcherAssert.assertThat(
+            root.resolve("target").toFile().isDirectory(),
+            Matchers.is(true)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("subdir.log").toFile().exists(),
+            Matchers.is(true)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("subdir/target/some.log").toFile().exists(),
+            Matchers.is(true)
+        );
+        final Mode mode = new Mode(Mode.Arg.D.getLabel());
+        new Cleanable.Grails2(
+            new Delete(
+                mode,
+                new Summary(mode)
+            )
+        ).clean(root);
+        MatcherAssert.assertThat(
+            root.resolve("target").toFile().isDirectory(),
+            Matchers.is(false)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("subdir.log").toFile().exists(),
+            Matchers.is(false)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("subdir/target/some.log").toFile().exists(),
             Matchers.is(false)
         );
     }
@@ -303,15 +343,34 @@ public final class CleanTest {
     }
 
     /**
-     * Create temporary file with dummy date. Skip if file is directory.
+     * Creates grails 2.x project structure.
+     * @return Temp directory of grails project.
+     */
+    private Path createGrails2() {
+        final Path root = this.folder.getRoot().toPath();
+        this.tempFile(
+            root.resolve("application.properties"),
+            "app.grails.version"
+        );
+        this.tempFile(root.resolve("target/file.txt"));
+        this.tempFile(root.resolve("target/file2.txt"));
+        this.tempFile(root.resolve("subdir.log"));
+        this.tempFile(root.resolve("subdir/target/some.log"));
+        this.tempFile(root.resolve(CleanTest.SIMPLE_TXT));
+        return root;
+    }
+
+    /**
+     * Create temporary file with specific content. Skip if file is directory.
      *
      * @param path Target path.
+     * @param content File content.
      */
-    private void tempFile(final Path path) {
+    private void tempFile(final Path path, final String content) {
         try {
             FileUtils.touch(path.toFile());
             if (!path.toFile().isDirectory()) {
-                FileUtils.writeStringToFile(path.toFile(), "two\blines");
+                FileUtils.writeStringToFile(path.toFile(), content);
             }
         } catch (final IOException exc) {
             throw new IllegalStateException(
@@ -319,6 +378,15 @@ public final class CleanTest {
                 exc
             );
         }
+    }
+
+    /**
+     * Create temporary file with dummy content. Skip if file is directory.
+     *
+     * @param path Target path.
+     */
+    private void tempFile(final Path path) {
+        this.tempFile(path, "two\nlines");
     }
 
 }
