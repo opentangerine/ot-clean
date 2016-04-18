@@ -47,6 +47,11 @@ public final class Clean {
     private final transient Summary summary;
 
     /**
+     * Delete handler.
+     */
+    private final transient Delete delete;
+
+    /**
      * Clean application.
      *
      * @param cargs Execution arguments.
@@ -65,10 +70,11 @@ public final class Clean {
      */
     public Clean(final Mode mode) {
         this.summary = new Summary(mode);
+        this.delete = new Delete(mode, this.summary);
         this.cleaners = Arrays.asList(
-            new Cleanable.Grails2(new Delete(mode, this.summary)),
-            new Cleanable.Maven(new Delete(mode, this.summary)),
-            new Cleanable.Yclean(new Delete(mode, this.summary))
+            new Cleanable.Grails2(),
+            new Cleanable.Maven(),
+            new Cleanable.Yclean()
         );
     }
 
@@ -101,7 +107,7 @@ public final class Clean {
             it -> {
                 if (it.match(path)) {
                     it.display(path, new Console());
-                    it.clean(path);
+                    it.clean(this.delete, path);
                 }
                 this.jump(path);
             }

@@ -42,11 +42,13 @@ import org.apache.commons.io.FileUtils;
 public interface Cleanable {
 
     /**
-     * Clean.
+     * Clean. This method should cleanup specific path using provided
+     * delete handler.
      *
+     * @param delete Deletion handler.
      * @param path Working directory.
      */
-    void clean(final Path path);
+    void clean(final Delete delete, final Path path);
 
     /**
      * Display information about matching configuration.
@@ -69,23 +71,10 @@ public interface Cleanable {
      */
     final class Maven implements Cleanable {
 
-        /**
-         * Delete operation.
-         */
-        private final Delete delete;
-
-        /**
-         * Ctor.
-         * @param cdelete Delete.
-         */
-        public Maven(final Delete cdelete) {
-            this.delete = cdelete;
-        }
-
         @Override
-        public void clean(final Path path) {
+        public void clean(final Delete delete, final Path path) {
             if (this.match(path)) {
-                this.delete.file(path.resolve("target"));
+                delete.file(path.resolve("target"));
             }
         }
 
@@ -109,28 +98,15 @@ public interface Cleanable {
      */
     final class Grails2 implements Cleanable {
 
-        /**
-         * Delete operation.
-         */
-        private final Delete delete;
-
-        /**
-         * Ctor.
-         * @param cdelete Delete.
-         */
-        public Grails2(final Delete cdelete) {
-            this.delete = cdelete;
-        }
-
         // FIXME GG: in progress, make it more dry
         @Override
-        public void clean(final Path path) {
+        public void clean(final Delete delete, final Path path) {
             if (this.match(path)) {
                 Yconfig yconf = new Yconfig();
                 yconf.setDeletes(Lists.newArrayList("target", "**/*.log"));
                 yconf
                     .filesToDelete(path)
-                    .forEach(this.delete::file);
+                    .forEach(delete::file);
             }
         }
 
@@ -168,26 +144,13 @@ public interface Cleanable {
      */
     final class Yclean implements Cleanable {
 
-        /**
-         * Delete operation.
-         */
-        private final Delete delete;
-
-        /**
-         * Ctor.
-         * @param cdelete Delete.
-         */
-        public Yclean(final Delete cdelete) {
-            this.delete = cdelete;
-        }
-
         @Override
-        public void clean(final Path path) {
+        public void clean(final Delete delete, final Path path) {
             if (this.match(path)) {
                 Yconfig
                     .load(Yclean.file(path))
                     .filesToDelete(path)
-                    .forEach(this.delete::file);
+                    .forEach(delete::file);
             }
         }
 
