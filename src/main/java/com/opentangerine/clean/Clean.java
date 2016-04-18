@@ -37,11 +37,6 @@ import java.util.Arrays;
  */
 public final class Clean {
     /**
-     * Cleaners.
-     */
-    private final transient Iterable<Cleanable> cleaners;
-
-    /**
      * Cleaning summary.
      */
     private final transient Summary summary;
@@ -63,7 +58,6 @@ public final class Clean {
     /**
      * Ctor.
      *
-     * // FIXME GG: in progress, check if there is a way for smarter
      * initialization of cleanables
      *
      * @param mode Mode.
@@ -71,11 +65,6 @@ public final class Clean {
     public Clean(final Mode mode) {
         this.summary = new Summary(mode);
         this.delete = new Delete(mode, this.summary);
-        this.cleaners = Arrays.asList(
-            new Cleanable.Grails2(),
-            new Cleanable.Maven(),
-            new Cleanable.Yclean()
-        );
     }
 
     /**
@@ -103,7 +92,7 @@ public final class Clean {
      * @param path Current path.
      */
     private void recurrence(final Path path) {
-        this.cleaners.forEach(
+        Cleanable.ALL.forEach(
             it -> {
                 if (it.match(path)) {
                     it.display(path, new Console());

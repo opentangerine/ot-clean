@@ -129,8 +129,7 @@ public final class CleanTest {
             Matchers.is(true)
         );
         final Mode mode = new Mode(Mode.Arg.D.getLabel());
-        new Cleanable.Yclean()
-            .clean(new Delete(mode, new Summary(mode)), root);
+        Cleanable.YCLEAN.clean(new Delete(mode, new Summary(mode)), root);
         MatcherAssert.assertThat(
             target.toFile().isDirectory(),
             Matchers.is(false)
@@ -156,7 +155,7 @@ public final class CleanTest {
             Matchers.is(true)
         );
         final Mode mode = new Mode(Mode.Arg.D.getLabel());
-        new Cleanable.Grails2().clean(new Delete(mode, new Summary(mode)), root);
+        Cleanable.GRAILS_2.clean(new Delete(mode, new Summary(mode)), root);
         MatcherAssert.assertThat(
             root.resolve("target").toFile().isDirectory(),
             Matchers.is(false)
@@ -277,8 +276,7 @@ public final class CleanTest {
             Matchers.is(true)
         );
         final Mode mode = new Mode("d");
-        new Cleanable.Yclean()
-            .clean(new Delete(mode, new Summary(mode)), root);
+        Cleanable.YCLEAN.clean(new Delete(mode, new Summary(mode)), root);
         MatcherAssert.assertThat(
             root.resolve(CleanTest.SIMPLE_TXT).toFile().exists(),
             Matchers.is(!deleted)

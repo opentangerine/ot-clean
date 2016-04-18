@@ -28,6 +28,7 @@ import com.jcabi.log.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 import org.apache.commons.io.FileUtils;
 
 /**
@@ -39,7 +40,8 @@ import org.apache.commons.io.FileUtils;
  * @version $Id$
  * @since 0.5
  */
-public interface Cleanable {
+interface Cleanable {
+
 
     /**
      * Clean. This method should cleanup specific path using provided
@@ -66,10 +68,7 @@ public interface Cleanable {
      */
     boolean match(final Path path);
 
-    /**
-     * Cleanup maven structure.
-     */
-    final class Maven implements Cleanable {
+    Cleanable MAVEN = new Cleanable() {
 
         @Override
         public void clean(final Delete delete, final Path path) {
@@ -91,12 +90,12 @@ public interface Cleanable {
                 )
             );
         }
-    }
+    };
 
     /**
      * Cleanup Grails structure.
      */
-    final class Grails2 implements Cleanable {
+    Cleanable GRAILS_2 = new Cleanable() {
 
         // FIXME GG: in progress, make it more dry
         @Override
@@ -137,18 +136,18 @@ public interface Cleanable {
                 )
             );
         }
-    }
+    };
 
     /**
      * Cleanup using yaml configuration file.
      */
-    final class Yclean implements Cleanable {
+    Cleanable YCLEAN = new Cleanable() {
 
         @Override
         public void clean(final Delete delete, final Path path) {
             if (this.match(path)) {
                 Yconfig
-                    .load(Yclean.file(path))
+                    .load(file(path))
                     .filesToDelete(path)
                     .forEach(delete::file);
             }
@@ -156,7 +155,7 @@ public interface Cleanable {
 
         @Override
         public boolean match(final Path path) {
-            return Yclean.file(path).exists();
+            return file(path).exists();
         }
 
         @Override
@@ -174,9 +173,16 @@ public interface Cleanable {
          * @param path Working directory.
          * @return Clean yml file.
          */
-        private static File file(final Path path) {
+        private File file(final Path path) {
             return path.resolve(".clean.yml").toFile();
         }
 
-    }
+    };
+
+    List<Cleanable> ALL = Lists.newArrayList(
+        MAVEN,
+        GRAILS_2,
+        YCLEAN
+    );
+
 }
