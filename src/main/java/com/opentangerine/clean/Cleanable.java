@@ -70,10 +70,13 @@ interface Cleanable {
      */
     boolean match(final Path path);
 
+    /**
+     * Cleanup maven structure.
+     */
     Cleanable MAVEN = new Definition(
         "Maven",
-        path -> path.resolve("pom.xml").toFile().exists(),
-        (delete, path) -> delete.file(path.resolve("target"))
+        If.fileExists("pom.xml"),
+        Then.delete("target")
     );
 
     /**
@@ -127,6 +130,60 @@ interface Cleanable {
         GRAILS_2,
         YCLEAN
     );
+
+    /**
+     * Collection of behaviours for matching purposes.
+     */
+    final class If {
+
+        /**
+         * Returns true if file exists.
+         *
+         * @param name Name of the file.
+         * @return Matching behaviour.
+         */
+        static Function<Path, Boolean> fileExists(String name) {
+            return path -> path.resolve(name).toFile().exists();
+        }
+
+        /**
+         * Returns true if file exists and contains specific phrase.
+         *
+         * // FIXME GG: in progress, add test case
+         *
+         * @param name Name of the file.
+         * @return Matching behaviour.
+         */
+        static Function<Path, Boolean> fileExistsWithRegExp(
+            String name, String regexp
+        ) {
+            return null;
+            // FIXME GG: in progress, in progress
+        }
+    }
+
+    /**
+     * Collection of behaviours for cleaning purposes.
+     */
+    final class Then {
+
+        /**
+         * Executes cleanup using list of paths. RegExps are allowed.
+         *
+         * @param deletes List of paths.
+         * @return Deleting behaviour.
+         */
+        static BiConsumer<Delete, Path> delete(String... deletes) {
+            return (delete, path) -> {
+                // FIXME GG: in progress, extract yconf so it's not needed
+                // within deletion scope
+                Yconfig yconf = new Yconfig();
+                yconf.setDeletes(Lists.newArrayList(deletes));
+                yconf.filesToDelete(path).forEach(delete::file);
+            };
+        }
+
+    }
 
     final class Definition implements Cleanable {
 
