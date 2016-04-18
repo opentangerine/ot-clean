@@ -29,6 +29,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import org.apache.commons.io.FileUtils;
 
 /**
@@ -68,51 +70,18 @@ interface Cleanable {
      */
     boolean match(final Path path);
 
-    Cleanable MAVEN = new Cleanable() {
-
-        @Override
-        public void clean(final Delete delete, final Path path) {
-            if (this.match(path)) {
-                delete.file(path.resolve("target"));
-            }
-        }
-
-        @Override
-        public boolean match(final Path path) {
-            return path.resolve("pom.xml").toFile().exists();
-        }
-
-        @Override
-        public void display(final Path path, final Console console) {
-            console.print(
-                String.format(
-                    "[Maven]: %s", path
-                )
-            );
-        }
-    };
+    Cleanable MAVEN = new Definition(
+        "Maven",
+        path -> path.resolve("pom.xml").toFile().exists(),
+        (delete, path) -> delete.file(path.resolve("target"))
+    );
 
     /**
      * Cleanup Grails structure.
      */
-    Cleanable GRAILS_2 = new Cleanable() {
-
-        // FIXME GG: in progress, make it more dry
-        @Override
-        public void clean(final Delete delete, final Path path) {
-            if (this.match(path)) {
-                Yconfig yconf = new Yconfig();
-                yconf.setDeletes(Lists.newArrayList("target", "**/*.log"));
-                yconf
-                    .filesToDelete(path)
-                    .forEach(delete::file);
-            }
-        }
-
-        // FIXME GG: in progress, extract to different method
-        // and cleanup
-        @Override
-        public boolean match(final Path path) {
+    Cleanable GRAILS_2 = new Definition(
+        "Grails 2",
+        path -> {
             boolean success;
             final File file = path
                 .resolve("application.properties")
@@ -122,67 +91,101 @@ interface Cleanable {
                     .readFileToString(file)
                     .contains("app.grails.version");
             } catch (IOException ioe) {
-                Logger.debug(this, "Unable to read %s %[exception]s", file, ioe);
+                Logger.debug(Cleanable.class, "Unable to read %s %[exception]s", file, ioe);
                 success = false;
             }
             return success;
+        },
+        (delete, path) -> {
+            Yconfig yconf = new Yconfig();
+            yconf.setDeletes(Lists.newArrayList("target", "**/*.log"));
+            yconf
+                .filesToDelete(path)
+                .forEach(delete::file);
         }
-
-        @Override
-        public void display(final Path path, final Console console) {
-            console.print(
-                String.format(
-                    "[Maven]: %s", path
-                )
-            );
-        }
-    };
+    );
 
     /**
      * Cleanup using yaml configuration file.
      */
-    Cleanable YCLEAN = new Cleanable() {
-
-        @Override
-        public void clean(final Delete delete, final Path path) {
-            if (this.match(path)) {
-                Yconfig
-                    .load(file(path))
-                    .filesToDelete(path)
-                    .forEach(delete::file);
-            }
+    Cleanable YCLEAN = new Definition(
+        ".clean.yml",
+        path -> path.resolve(".clean.yml").toFile().exists(),
+        (delete, path) -> {
+            Yconfig
+                .load(path.resolve(".clean.yml").toFile())
+                .filesToDelete(path)
+                .forEach(delete::file);
         }
+    );
 
-        @Override
-        public boolean match(final Path path) {
-            return file(path).exists();
-        }
-
-        @Override
-        public void display(final Path path, final Console console) {
-            console.print(
-                String.format(
-                    "[.clean.yml]: %s", path
-                )
-            );
-        }
-
-        /**
-         * Returns configuration file.
-         *
-         * @param path Working directory.
-         * @return Clean yml file.
-         */
-        private File file(final Path path) {
-            return path.resolve(".clean.yml").toFile();
-        }
-
-    };
-
+    /**
+     * List of all available cleaners.
+     */
     List<Cleanable> ALL = Lists.newArrayList(
         MAVEN,
         GRAILS_2,
         YCLEAN
     );
+
+    final class Definition implements Cleanable {
+
+        /**
+         * Name of the cleaning definition.
+         */
+        private String name;
+
+        /**
+         * Matching behaviour.
+         */
+        private Function<Path, Boolean> matcher;
+
+        /**
+         * Cleaning behaviour.
+         */
+        private BiConsumer<Delete, Path> cleaner;
+
+        /**
+         * Ctor.
+         *
+         * @param cname Name of the cleaner.
+         * @param cmatcher Matching behaviour.
+         * @param ccleaner Cleaning behaviour.
+         */
+        public Definition(
+            final String cname,
+            final Function<Path, Boolean> cmatcher,
+            final BiConsumer<Delete, Path> ccleaner
+        ) {
+            this.name = cname;
+            this.matcher = cmatcher;
+            this.cleaner = ccleaner;
+        }
+
+        @Override
+        public void clean(final Delete delete, final Path path) {
+            if(this.match(path)) {
+                this.cleaner.accept(delete, path);
+            }
+        }
+
+        @Override
+        public boolean match(final Path path) {
+            return this.matcher.apply(path);
+        }
+
+        @Override
+        public void display(final Path path, final Console console) {
+            console.print(
+                String.format(
+                    "[%s]: %s", this.name, path
+                )
+            );
+        }
+
+    }
+
+
+
 
 }
