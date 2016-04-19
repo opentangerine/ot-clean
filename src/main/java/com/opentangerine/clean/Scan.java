@@ -47,7 +47,7 @@ public final class Scan {
      * @param patterns Array of patterns to delete.
      * @return Stream of files.
      */
-    public Stream<Path> scan(final Path path, final String[] patterns) {
+    public Stream<Path> scan(final Path path, final String... patterns) {
         Logger.debug(this, "Scanner: %s", path);
         final DirectoryScanner scanner = new DirectoryScanner();
         scanner.setIncludes(patterns);

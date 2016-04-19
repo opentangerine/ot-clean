@@ -23,18 +23,15 @@
  */
 package com.opentangerine.clean;
 
-import com.jcabi.log.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.shared.utils.io.DirectoryScanner;
 import org.yaml.snakeyaml.Yaml;
 
 /**

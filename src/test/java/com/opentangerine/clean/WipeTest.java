@@ -56,10 +56,14 @@ public final class WipeTest {
      */
     @Test
     public void shouldFindExistingRegExpInTheFile() throws IOException {
-        final File file = folder.newFile();
+        final File file = this.folder.newFile();
         FileUtils.write(file, "oiawef\nrsxenablePlugins(PlayJava)web\"vasd");
-        final Function<Path, Boolean> behaviour = Wipe.If.fileExistsWithRegExp(file.getName(), "enablePlugins\\(PlayJava\\)");
-        final Boolean result = behaviour.apply(folder.getRoot().toPath());
+        final Function<Path, Boolean> behaviour = Wipe.If
+            .fileExistsWithRegExp(
+                file.getName(),
+                "enablePlugins\\(PlayJava\\)"
+            );
+        final Boolean result = behaviour.apply(this.folder.getRoot().toPath());
         MatcherAssert.assertThat(
             result,
             Matchers.is(true)
@@ -73,10 +77,14 @@ public final class WipeTest {
      */
     @Test
     public void shouldNotFindExistingRegExpInTheFile() throws IOException {
-        final File file = folder.newFile();
+        final File file = this.folder.newFile();
         FileUtils.write(file, "missing");
-        final Function<Path, Boolean> behaviour = Wipe.If.fileExistsWithRegExp(file.getName(), ".*example.*");
-        final Boolean result = behaviour.apply(folder.getRoot().toPath());
+        final Function<Path, Boolean> behaviour = Wipe.If
+            .fileExistsWithRegExp(
+                file.getName(),
+                ".*example.*"
+            );
+        final Boolean result = behaviour.apply(this.folder.getRoot().toPath());
         MatcherAssert.assertThat(
             result,
             Matchers.is(false)

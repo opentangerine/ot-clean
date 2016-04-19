@@ -40,8 +40,9 @@ import org.junit.rules.TemporaryFolder;
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
  * @since 0.5
+ * @checkstyle MultipleStringLiteralsCheck (2000 lines)
  */
-@SuppressWarnings("PMD.TooManyMethods")
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.AvoidDuplicateLiterals"})
 public final class CleanTest {
 
     /**
@@ -127,8 +128,7 @@ public final class CleanTest {
             target.toFile().isDirectory(),
             Matchers.is(true)
         );
-        final Mode mode = new Mode(Mode.Arg.D.getLabel());
-        this.get(Wipe.Type.OT_CLEAN).clean(new Delete(mode, new Summary(mode)), root);
+        this.run(Wipe.Type.OT_CLEAN, root);
         MatcherAssert.assertThat(
             target.toFile().isDirectory(),
             Matchers.is(false)
@@ -139,8 +139,8 @@ public final class CleanTest {
      * Delete Grails 2.x project without any configuration.
      */
     @Test
-    public void deleteGrails2ProjectWithoutAnyConfiguration() {
-        final Path root = this.createGrails2();
+    public void defaultGrailsVersionTwo() {
+        final Path root = this.createGrailsVersionTwo();
         MatcherAssert.assertThat(
             root.resolve("target").toFile().isDirectory(),
             Matchers.is(true)
@@ -153,8 +153,7 @@ public final class CleanTest {
             root.resolve("subdir/target/some.log").toFile().exists(),
             Matchers.is(true)
         );
-        final Mode mode = new Mode(Mode.Arg.D.getLabel());
-        this.get(Wipe.Type.GRAILS_2).clean(new Delete(mode, new Summary(mode)), root);
+        this.run(Wipe.Type.GRAILS_2, root);
         MatcherAssert.assertThat(
             root.resolve("target").toFile().isDirectory(),
             Matchers.is(false)
@@ -173,8 +172,8 @@ public final class CleanTest {
      * Delete Grails 2.x project without any configuration.
      */
     @Test
-    public void deleteGrails3ProjectWithoutAnyConfiguration() {
-        final Path root = this.createGrails3();
+    public void defaultGrailsVersionThree() {
+        final Path root = this.createGrailsVersionThree();
         MatcherAssert.assertThat(
             root.resolve("build").toFile().isDirectory(),
             Matchers.is(true)
@@ -187,8 +186,7 @@ public final class CleanTest {
             root.resolve("subdir/target/some.log").toFile().exists(),
             Matchers.is(true)
         );
-        final Mode mode = new Mode(Mode.Arg.D.getLabel());
-        this.get(Wipe.Type.GRAILS_3).clean(new Delete(mode, new Summary(mode)), root);
+        this.run(Wipe.Type.GRAILS_3, root);
         MatcherAssert.assertThat(
             root.resolve("build").toFile().isDirectory(),
             Matchers.is(false)
@@ -207,9 +205,8 @@ public final class CleanTest {
      * Delete PlayFramework 2.x project without any configuration.
      */
     @Test
-    public void deletePlayframework2xProjectWithoutAnyConfiguration() {
-        final Path root = this.createPlayframework2x();
-        final Mode mode = new Mode(Mode.Arg.D.getLabel());
+    public void defaultPlayVersionTwo() {
+        final Path root = this.createPlayVersionTwo();
         MatcherAssert.assertThat(
             root.resolve("logs/a.log").toFile().exists(),
             Matchers.is(true)
@@ -234,7 +231,7 @@ public final class CleanTest {
             root.resolve("subdir/target/some.log").toFile().exists(),
             Matchers.is(true)
         );
-        this.get(Wipe.Type.PLAYFRAMEWORK_2).clean(new Delete(mode, new Summary(mode)), root);
+        this.run(Wipe.Type.PLAYFRAMEWORK_2, root);
         MatcherAssert.assertThat(
             root.resolve("logs/a.log").toFile().exists(),
             Matchers.is(false)
@@ -366,8 +363,7 @@ public final class CleanTest {
             root.resolve(CleanTest.SIMPLE_TXT).toFile().exists(),
             Matchers.is(true)
         );
-        final Mode mode = new Mode("d");
-        this.get(Wipe.Type.OT_CLEAN).clean(new Delete(mode, new Summary(mode)), root);
+        this.run(Wipe.Type.OT_CLEAN, root);
         MatcherAssert.assertThat(
             root.resolve(CleanTest.SIMPLE_TXT).toFile().exists(),
             Matchers.is(!deleted)
@@ -425,7 +421,7 @@ public final class CleanTest {
      * Creates grails 2.x project structure.
      * @return Temp directory of project.
      */
-    private Path createGrails2() {
+    private Path createGrailsVersionTwo() {
         final Path root = this.folder.getRoot().toPath();
         this.tempFile(
             root.resolve("application.properties"),
@@ -442,7 +438,7 @@ public final class CleanTest {
      * Creates grails 3.x project structure.
      * @return Temp directory of project.
      */
-    private Path createGrails3() {
+    private Path createGrailsVersionThree() {
         final Path root = this.folder.getRoot().toPath();
         this.tempFile(
             root.resolve("build.gradle"),
@@ -459,7 +455,7 @@ public final class CleanTest {
      * Creates playframework 2.x project structure.
      * @return Temp directory of project.
      */
-    private Path createPlayframework2x() {
+    private Path createPlayVersionTwo() {
         final Path root = this.folder.getRoot().toPath();
         this.tempFile(
             root.resolve("build.sbt"),
@@ -505,15 +501,17 @@ public final class CleanTest {
     }
 
     /**
-     * Return definition of a given type.
+     * Execute cleaning using specific type and deleting mode.
      * @param type Definition type.
-     * @return Definition.
+     * @param path Path where cleaning should be executed.
      */
-    private Wipe get(Wipe.Type type) {
-        return Wipe.DEFAULT
+    private void run(final Wipe.Type type, final Path path) {
+        final Mode mode = new Mode(Mode.Arg.D.getLabel());
+        Wipe.DEFAULT
             .stream()
-            .filter(it -> it.is(type))
+            .filter(it -> it.match(type))
             .findAny()
-            .get();
+            .get()
+            .clean(new Delete(mode, new Summary(mode)), path);
     }
 }
