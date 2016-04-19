@@ -86,28 +86,8 @@ interface Cleanable {
      */
     Cleanable GRAILS_2 = new Definition(
         "Grails 2",
-        path -> {
-            boolean success;
-            final File file = path
-                .resolve("application.properties")
-                .toFile();
-            try {
-                success = file.exists() && FileUtils
-                    .readFileToString(file)
-                    .contains("app.grails.version");
-            } catch (IOException ioe) {
-                Logger.debug(Cleanable.class, "Unable to read %s %[exception]s", file, ioe);
-                success = false;
-            }
-            return success;
-        },
-        (delete, path) -> {
-            Yconfig yconf = new Yconfig();
-            yconf.setDeletes(Lists.newArrayList("target", "**/*.log"));
-            yconf
-                .filesToDelete(path)
-                .forEach(delete::file);
-        }
+        If.fileExistsWithRegExp("application.properties", "app.grails.version"),
+        Then.delete("target", "**/*.log")
     );
 
     /**
@@ -127,6 +107,7 @@ interface Cleanable {
     /**
      * List of all available cleaners.
      * // FIXME GG: in progress, convert to map and change this all method.
+     * // FIXME GG: in progress, extract types to enumeration
      */
     List<Cleanable> ALL = Lists.newArrayList(
         MAVEN,
@@ -160,8 +141,9 @@ interface Cleanable {
         ) {
             return path -> {
                 try {
-                    return FileUtils
-                        .readFileToString(path.resolve(name).toFile())
+                    final File file = path.resolve(name).toFile();
+                    return file.exists() && FileUtils
+                        .readFileToString(file)
                         .matches(regexp);
                 } catch (IOException exc) {
                     throw new IllegalStateException("Unable to read file", exc);
