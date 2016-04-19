@@ -23,13 +23,12 @@
  */
 package com.opentangerine.clean;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -85,64 +84,49 @@ interface Cleanable {
     /**
      * List of default cleaners.
      */
-    Map<Type, Definition> DEFAULT = new ImmutableMap.Builder<Type, Definition>()
-        .put(
+    List<Definition> DEFAULT = Lists.newArrayList(
+        new Definition(
             Type.MAVEN,
-            new Definition(
-                Type.MAVEN,
-                If.fileExists("pom.xml"),
-                Then.delete("target")
-            )
-        )
-        .put(
+            If.fileExists("pom.xml"),
+            Then.delete("target")
+        ),
+        new Definition(
             Type.GRAILS_2,
-            new Definition(
-                Type.GRAILS_2,
-                If.fileExistsWithRegExp(
-                    "application.properties",
-                    "app.grails.version"
-                ),
-                Then.delete("target", "**/*.log")
-            )
-        )
-        .put(
+            If.fileExistsWithRegExp(
+                "application.properties",
+                "app.grails.version"
+            ),
+            Then.delete("target", "**/*.log")
+        ),
+        new Definition(
             Type.GRAILS_3,
-            new Definition(
-                Type.GRAILS_3,
-                If.fileExistsWithRegExp(
-                    "build.gradle",
-                    "apply plugin:.*org.grails"
-                ),
-                Then.delete("build", "**/*.log")
-            )
-        )
-        .put(
+            If.fileExistsWithRegExp(
+                "build.gradle",
+                "apply plugin:.*org.grails"
+            ),
+            Then.delete("build", "**/*.log")
+        ),
+        new Definition(
             Type.OT_CLEAN,
-            new Definition(
-                Type.OT_CLEAN,
-                If.fileExists(".clean.yml"),
-                Then.useYmlConfig()
-            )
-        )
-        .put(
+            If.fileExists(".clean.yml"),
+            Then.useYmlConfig()
+        ),
+        new Definition(
             Type.PLAYFRAMEWORK_2,
-            new Definition(
-                Type.PLAYFRAMEWORK_2,
-                If.fileExistsWithRegExp(
-                    "build.sbt",
-                    "enablePlugins\\(PlayJava\\)"
-                ),
-                Then.delete(
-                    "logs",
-                    "target",
-                    "project/target",
-                    "project/project/target",
-                    ".sbtserver",
-                    "**/*.log"
-                )
+            If.fileExistsWithRegExp(
+                "build.sbt",
+                "enablePlugins\\(PlayJava\\)"
+            ),
+            Then.delete(
+                "logs",
+                "target",
+                "project/target",
+                "project/project/target",
+                ".sbtserver",
+                "**/*.log"
             )
         )
-        .build();
+    );
 
     /**
      * Collection of behaviours for matching purposes.
@@ -262,6 +246,16 @@ interface Cleanable {
                 );
                 this.cleaner.accept(delete, path);
             }
+        }
+
+        /**
+         * Check if definition is this type.
+         *
+         * @param that Type to compare.
+         * @return True is type match.
+         */
+        public boolean is(Type that) {
+            return this.type == that;
         }
     }
 

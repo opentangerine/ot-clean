@@ -129,7 +129,7 @@ public final class CleanTest {
             Matchers.is(true)
         );
         final Mode mode = new Mode(Mode.Arg.D.getLabel());
-        Cleanable.DEFAULT.get(Cleanable.Type.OT_CLEAN).clean(new Delete(mode, new Summary(mode)), root);
+        this.get(Cleanable.Type.OT_CLEAN).clean(new Delete(mode, new Summary(mode)), root);
         MatcherAssert.assertThat(
             target.toFile().isDirectory(),
             Matchers.is(false)
@@ -155,7 +155,7 @@ public final class CleanTest {
             Matchers.is(true)
         );
         final Mode mode = new Mode(Mode.Arg.D.getLabel());
-        Cleanable.DEFAULT.get(Cleanable.Type.GRAILS_2).clean(new Delete(mode, new Summary(mode)), root);
+        this.get(Cleanable.Type.GRAILS_2).clean(new Delete(mode, new Summary(mode)), root);
         MatcherAssert.assertThat(
             root.resolve("target").toFile().isDirectory(),
             Matchers.is(false)
@@ -189,7 +189,7 @@ public final class CleanTest {
             Matchers.is(true)
         );
         final Mode mode = new Mode(Mode.Arg.D.getLabel());
-        Cleanable.DEFAULT.get(Cleanable.Type.GRAILS_3).clean(new Delete(mode, new Summary(mode)), root);
+        this.get(Cleanable.Type.GRAILS_3).clean(new Delete(mode, new Summary(mode)), root);
         MatcherAssert.assertThat(
             root.resolve("build").toFile().isDirectory(),
             Matchers.is(false)
@@ -235,7 +235,7 @@ public final class CleanTest {
             root.resolve("subdir/target/some.log").toFile().exists(),
             Matchers.is(true)
         );
-        Cleanable.DEFAULT.get(Cleanable.Type.PLAYFRAMEWORK_2).clean(new Delete(mode, new Summary(mode)), root);
+        this.get(Cleanable.Type.PLAYFRAMEWORK_2).clean(new Delete(mode, new Summary(mode)), root);
         MatcherAssert.assertThat(
             root.resolve("logs/a.log").toFile().exists(),
             Matchers.is(false)
@@ -368,7 +368,7 @@ public final class CleanTest {
             Matchers.is(true)
         );
         final Mode mode = new Mode("d");
-        Cleanable.DEFAULT.get(Cleanable.Type.OT_CLEAN).clean(new Delete(mode, new Summary(mode)), root);
+        this.get(Cleanable.Type.OT_CLEAN).clean(new Delete(mode, new Summary(mode)), root);
         MatcherAssert.assertThat(
             root.resolve(CleanTest.SIMPLE_TXT).toFile().exists(),
             Matchers.is(!deleted)
@@ -505,4 +505,16 @@ public final class CleanTest {
         this.tempFile(path, "two\nlines");
     }
 
+    /**
+     * Return definition of a given type.
+     * @param type Definition type.
+     * @return Definition.
+     */
+    Cleanable get(Cleanable.Type type) {
+        return Cleanable.DEFAULT
+            .stream()
+            .filter(it -> it.is(type))
+            .findAny()
+            .get();
+    }
 }
