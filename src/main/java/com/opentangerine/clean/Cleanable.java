@@ -37,8 +37,6 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * This is initial class, should be changed to something else.
  *
- * // FIXME GG: in progress, refactor to more modular form
- *
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
  * @since 0.5
