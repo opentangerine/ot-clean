@@ -175,13 +175,10 @@ interface Wipe {
          * @return Deleting behaviour.
          */
         static BiConsumer<Delete, Path> delete(String... deletes) {
-            return (delete, path) -> {
-                // FIXME GG: in progress, extract yconf so it's not needed
-                // within deletion scope
-                Yconfig yconf = new Yconfig();
-                yconf.setDeletes(Lists.newArrayList(deletes));
-                yconf.filesToDelete(path).forEach(delete::file);
-            };
+            return (delete, path) ->
+                new Scan()
+                    .scan(path, deletes)
+                    .forEach(delete::file);
         }
 
         /**
@@ -190,14 +187,11 @@ interface Wipe {
          * @return Deleting behaviour.
          */
         static BiConsumer<Delete, Path> useYmlConfig() {
-            return (delete, path) -> {
-                // FIXME GG: in progress, extract yconf so it's not needed
-                // within deletion scope
+            return (delete, path) ->
                 Yconfig
                     .load(path.resolve(".clean.yml").toFile())
                     .filesToDelete(path)
                     .forEach(delete::file);
-            };
         }
     }
 

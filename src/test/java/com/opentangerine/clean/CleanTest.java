@@ -37,7 +37,6 @@ import org.junit.rules.TemporaryFolder;
 /**
  * This is test suit for {@link Clean} class.
  *
- * // FIXME GG: in progress split into smaller classes
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
  * @since 0.5

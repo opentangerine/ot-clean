@@ -89,19 +89,7 @@ public final class Yconfig {
      * @return Stream of files.
      */
     public Stream<Path> filesToDelete(final Path path) {
-        Logger.debug(this, "Scanner: %s", path);
-        final DirectoryScanner scanner = new DirectoryScanner();
-        scanner.setIncludes(
-            this.deletes.toArray(new String[this.deletes.size()])
-        );
-        Logger.debug(this, "- deletes: %s", this.deletes);
-        scanner.setBasedir(path.toFile());
-        scanner.setCaseSensitive(false);
-        scanner.scan();
-        return Stream.concat(
-            Arrays.stream(scanner.getIncludedDirectories()),
-            Arrays.stream(scanner.getIncludedFiles())
-        ).map(path::resolve);
+        return new Scan().scan(path, this.deletes);
     }
 
     /**

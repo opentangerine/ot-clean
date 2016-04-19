@@ -102,9 +102,5 @@ You can see list of all supported arguments for current version [here](https://g
 * ✓ 0.8  - Removed recurrence parameter `r`, cleanup, added coveralls
 * ✓ 0.9  - Add support for multiple base dirs (`dirs:` section)
 * ✓ 0.10 - Fix log4j configuration, updated readme
-* ✓ 0.11 - Add auto cleaner for Grails application and modules
-
-### Backlog
-
-* Add linux script
-* Add exclude support
+* ✓ 0.11 - Add auto cleaner for Grails application and modules, refactoring
+*   0.12 - Test cases refactoring and test coverage
