@@ -205,6 +205,64 @@ public final class CleanTest {
     }
 
     /**
+     * Delete PlayFramework 2.x project without any configuration.
+     */
+    @Test
+    public void deletePlayframework2xProjectWithoutAnyConfiguration() {
+        final Path root = this.createPlayframework2x();
+        final Mode mode = new Mode(Mode.Arg.D.getLabel());
+        MatcherAssert.assertThat(
+            root.resolve("logs/a.log").toFile().exists(),
+            Matchers.is(true)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("target/a.file").toFile().exists(),
+            Matchers.is(true)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("project/target/a.file").toFile().exists(),
+            Matchers.is(true)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("project/project/target/a.file").toFile().exists(),
+            Matchers.is(true)
+        );
+        MatcherAssert.assertThat(
+            root.resolve(".sbtserver/a.file").toFile().exists(),
+            Matchers.is(true)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("subdir/target/some.log").toFile().exists(),
+            Matchers.is(true)
+        );
+        Cleanable.DEFAULT.get(Cleanable.Type.PLAYFRAMEWORK_2).clean(new Delete(mode, new Summary(mode)), root);
+        MatcherAssert.assertThat(
+            root.resolve("logs/a.log").toFile().exists(),
+            Matchers.is(false)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("target/a.file").toFile().exists(),
+            Matchers.is(false)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("project/target/a.file").toFile().exists(),
+            Matchers.is(false)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("project/project/target/a.file").toFile().exists(),
+            Matchers.is(false)
+        );
+        MatcherAssert.assertThat(
+            root.resolve(".sbtserver/a.file").toFile().exists(),
+            Matchers.is(false)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("subdir/target/some.log").toFile().exists(),
+            Matchers.is(false)
+        );
+    }
+
+    /**
      * Execute cleanup from sibling directory using dirs section.
      */
     @Test
@@ -378,7 +436,6 @@ public final class CleanTest {
         this.tempFile(root.resolve("target/file2.txt"));
         this.tempFile(root.resolve("subdir.log"));
         this.tempFile(root.resolve("subdir/target/some.log"));
-        this.tempFile(root.resolve(CleanTest.SIMPLE_TXT));
         return root;
     }
 
@@ -396,7 +453,26 @@ public final class CleanTest {
         this.tempFile(root.resolve("build/file2.txt"));
         this.tempFile(root.resolve("subdir.log"));
         this.tempFile(root.resolve("subdir/target/some.log"));
-        this.tempFile(root.resolve(CleanTest.SIMPLE_TXT));
+        return root;
+    }
+
+    /**
+     * Creates playframework 2.x project structure.
+     * @return Temp directory of project.
+     */
+    private Path createPlayframework2x() {
+        final Path root = this.folder.getRoot().toPath();
+        this.tempFile(
+            root.resolve("build.sbt"),
+            "oiawef\nrsxenablePlugins(PlayJava)web\"vasd"
+        );
+        this.tempFile(root.resolve("logs/a.log"));
+        this.tempFile(root.resolve("target/a.file"));
+        this.tempFile(root.resolve("project/target/a.file"));
+        this.tempFile(root.resolve("project/project/target/a.file"));
+        this.tempFile(root.resolve(".sbtserver/a.file"));
+        this.tempFile(root.resolve("subdir.log"));
+        this.tempFile(root.resolve("subdir/target/some.log"));
         return root;
     }
 

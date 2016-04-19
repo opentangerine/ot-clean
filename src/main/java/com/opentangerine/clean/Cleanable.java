@@ -61,6 +61,7 @@ interface Cleanable {
         MAVEN,
         GRAILS_2,
         GRAILS_3,
+        PLAYFRAMEWORK_2,
         YCLEAN
     }
 
@@ -106,6 +107,24 @@ interface Cleanable {
                 Then.useYmlConfig()
             )
         )
+        .put(
+            Type.PLAYFRAMEWORK_2,
+            new Definition(
+                "PlayFramework 2.x",
+                If.fileExistsWithRegExp(
+                    "build.sbt",
+                    "enablePlugins\\(PlayJava\\)"
+                ),
+                Then.delete(
+                    "logs",
+                    "target",
+                    "project/target",
+                    "project/project/target",
+                    ".sbtserver",
+                    "**/*.log"
+                )
+            )
+        )
         .build();
 
     /**
@@ -135,6 +154,9 @@ interface Cleanable {
             return path -> {
                 try {
                     final File file = path.resolve(name).toFile();
+                    if(file.exists()) {
+                        System.out.println(FileUtils.readFileToString(file));
+                    }
                     return file.exists() && Pattern.compile(regexp).matcher(
                         FileUtils.readFileToString(file)).find();
                 } catch (IOException exc) {

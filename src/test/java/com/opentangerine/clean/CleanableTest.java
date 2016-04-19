@@ -59,8 +59,8 @@ public final class CleanableTest {
     @Test
     public void shouldFindExistingRegExpInTheFile() throws IOException {
         final File file = folder.newFile();
-        FileUtils.write(file, "example text");
-        final Function<Path, Boolean> behaviour = Cleanable.If.fileExistsWithRegExp(file.getName(), ".*example.*");
+        FileUtils.write(file, "oiawef\nrsxenablePlugins(PlayJava)web\"vasd");
+        final Function<Path, Boolean> behaviour = Cleanable.If.fileExistsWithRegExp(file.getName(), "enablePlugins\\(PlayJava\\)");
         final Boolean result = behaviour.apply(folder.getRoot().toPath());
         MatcherAssert.assertThat(
             result,
