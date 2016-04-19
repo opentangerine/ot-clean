@@ -55,14 +55,6 @@ interface Cleanable {
     void clean(final Delete delete, final Path path);
 
     /**
-     * Check if matching.
-     *
-     * @param path Working directory.
-     * @return True if cleanable.
-     */
-    boolean match(final Path path);
-
-    /**
      * Available types of default cleaners.
      */
     enum Type {
@@ -226,34 +218,14 @@ interface Cleanable {
 
         @Override
         public void clean(final Delete delete, final Path path) {
-            if(this.match(path)) {
-                this.display(path, new Console());
+            if(this.matcher.apply(path)) {
+                new Console().print(
+                    String.format(
+                        "[%s]: %s", this.name, path
+                    )
+                );
                 this.cleaner.accept(delete, path);
             }
         }
-
-        @Override
-        public boolean match(final Path path) {
-            return this.matcher.apply(path);
-        }
-
-        /**
-         * Display information about matching configuration.
-         *
-         * @param path Working directory.
-         * @param console Console.
-         */
-        private void display(final Path path, final Console console) {
-            console.print(
-                String.format(
-                    "[%s]: %s", this.name, path
-                )
-            );
-        }
-
     }
-
-
-
-
 }
