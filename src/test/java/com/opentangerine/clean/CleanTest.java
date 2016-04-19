@@ -129,7 +129,7 @@ public final class CleanTest {
             Matchers.is(true)
         );
         final Mode mode = new Mode(Mode.Arg.D.getLabel());
-        Cleanable.DEFAULT.get(Cleanable.Type.YCLEAN).clean(new Delete(mode, new Summary(mode)), root);
+        Cleanable.DEFAULT.get(Cleanable.Type.OT_CLEAN).clean(new Delete(mode, new Summary(mode)), root);
         MatcherAssert.assertThat(
             target.toFile().isDirectory(),
             Matchers.is(false)
@@ -368,7 +368,7 @@ public final class CleanTest {
             Matchers.is(true)
         );
         final Mode mode = new Mode("d");
-        Cleanable.DEFAULT.get(Cleanable.Type.YCLEAN).clean(new Delete(mode, new Summary(mode)), root);
+        Cleanable.DEFAULT.get(Cleanable.Type.OT_CLEAN).clean(new Delete(mode, new Summary(mode)), root);
         MatcherAssert.assertThat(
             root.resolve(CleanTest.SIMPLE_TXT).toFile().exists(),
             Matchers.is(!deleted)

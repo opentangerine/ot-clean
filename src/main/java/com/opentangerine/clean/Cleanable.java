@@ -28,11 +28,14 @@ import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.text.WordUtils;
+import org.apache.maven.shared.utils.StringUtils;
 
 /**
  * This is initial class, should be changed to something else.
@@ -62,7 +65,21 @@ interface Cleanable {
         GRAILS_2,
         GRAILS_3,
         PLAYFRAMEWORK_2,
-        YCLEAN
+        OT_CLEAN;
+
+        /**
+         * Generates user friendly name of this enumeration.
+         * @return Name.
+         */
+        public String display() {
+            return StringUtils.replace(
+                WordUtils.capitalize(
+                    name().toLowerCase(Locale.ENGLISH)
+                ),
+                "_",
+                " "
+            );
+        }
     }
 
     /**
@@ -72,7 +89,7 @@ interface Cleanable {
         .put(
             Type.MAVEN,
             new Definition(
-                "Maven",
+                Type.MAVEN,
                 If.fileExists("pom.xml"),
                 Then.delete("target")
             )
@@ -80,7 +97,7 @@ interface Cleanable {
         .put(
             Type.GRAILS_2,
             new Definition(
-                "Grails 2.x",
+                Type.GRAILS_2,
                 If.fileExistsWithRegExp(
                     "application.properties",
                     "app.grails.version"
@@ -91,7 +108,7 @@ interface Cleanable {
         .put(
             Type.GRAILS_3,
             new Definition(
-                "Grails 3.x",
+                Type.GRAILS_3,
                 If.fileExistsWithRegExp(
                     "build.gradle",
                     "apply plugin:.*org.grails"
@@ -100,9 +117,9 @@ interface Cleanable {
             )
         )
         .put(
-            Type.YCLEAN,
+            Type.OT_CLEAN,
             new Definition(
-                ".clean.yml",
+                Type.OT_CLEAN,
                 If.fileExists(".clean.yml"),
                 Then.useYmlConfig()
             )
@@ -110,7 +127,7 @@ interface Cleanable {
         .put(
             Type.PLAYFRAMEWORK_2,
             new Definition(
-                "PlayFramework 2.x",
+                Type.PLAYFRAMEWORK_2,
                 If.fileExistsWithRegExp(
                     "build.sbt",
                     "enablePlugins\\(PlayJava\\)"
@@ -154,9 +171,6 @@ interface Cleanable {
             return path -> {
                 try {
                     final File file = path.resolve(name).toFile();
-                    if(file.exists()) {
-                        System.out.println(FileUtils.readFileToString(file));
-                    }
                     return file.exists() && Pattern.compile(regexp).matcher(
                         FileUtils.readFileToString(file)).find();
                 } catch (IOException exc) {
@@ -209,7 +223,7 @@ interface Cleanable {
         /**
          * Name of the cleaning definition.
          */
-        private String name;
+        private Type type;
 
         /**
          * Matching behaviour.
@@ -224,16 +238,16 @@ interface Cleanable {
         /**
          * Ctor.
          *
-         * @param cname Name of the cleaner.
+         * @param ctype Type of the cleaner.
          * @param cmatcher Matching behaviour.
          * @param ccleaner Cleaning behaviour.
          */
         public Definition(
-            final String cname,
+            final Type ctype,
             final Function<Path, Boolean> cmatcher,
             final BiConsumer<Delete, Path> ccleaner
         ) {
-            this.name = cname;
+            this.type = ctype;
             this.matcher = cmatcher;
             this.cleaner = ccleaner;
         }
@@ -243,11 +257,12 @@ interface Cleanable {
             if(this.matcher.apply(path)) {
                 new Console().print(
                     String.format(
-                        "[%s]: %s", this.name, path
+                        "[%s]: %s", this.type.display(), path
                     )
                 );
                 this.cleaner.accept(delete, path);
             }
         }
     }
+
 }
