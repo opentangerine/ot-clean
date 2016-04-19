@@ -55,14 +55,6 @@ interface Cleanable {
     void clean(final Delete delete, final Path path);
 
     /**
-     * Display information about matching configuration.
-     *
-     * @param path Working directory.
-     * @param console Console.
-     */
-    void display(final Path path, final Console console);
-
-    /**
      * Check if matching.
      *
      * @param path Working directory.
@@ -245,8 +237,13 @@ interface Cleanable {
             return this.matcher.apply(path);
         }
 
-        @Override
-        public void display(final Path path, final Console console) {
+        /**
+         * Display information about matching configuration.
+         *
+         * @param path Working directory.
+         * @param console Console.
+         */
+        private void display(final Path path, final Console console) {
             console.print(
                 String.format(
                     "[%s]: %s", this.name, path
