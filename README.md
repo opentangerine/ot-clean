@@ -90,8 +90,6 @@ You can see list of all supported arguments for current version [here](https://g
 
 ## Roadmap
 
-### Versions
-
 * ✓ 0.1  - Clean maven project in current directory without using maven
 * ✓ 0.2  - Recurrence parameter `r`
 * ✓ 0.3  - Add support to delete custom directories via .clean.yml
@@ -103,4 +101,5 @@ You can see list of all supported arguments for current version [here](https://g
 * ✓ 0.9  - Add support for multiple base dirs (`dirs:` section)
 * ✓ 0.10 - Fix log4j configuration, updated readme
 * ✓ 0.11 - Add auto cleaner for Grails application and modules, refactoring
-*   0.12 - Test cases refactoring and test coverage
+* ✓ 0.12 - Add exclusion, do not display dirs if no files found
+*   0.13 - Test cases refactoring and test coverage
