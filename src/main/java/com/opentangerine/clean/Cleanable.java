@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * This is initial class, should be changed to something else.
@@ -42,6 +43,7 @@ import org.apache.commons.io.FileUtils;
  * @version $Id$
  * @since 0.5
  */
+// FIXME GG: in progress, rename to Wipe
 interface Cleanable {
 
 
@@ -124,6 +126,7 @@ interface Cleanable {
 
     /**
      * List of all available cleaners.
+     * // FIXME GG: in progress, convert to map and change this all method.
      */
     List<Cleanable> ALL = Lists.newArrayList(
         MAVEN,
@@ -149,16 +152,21 @@ interface Cleanable {
         /**
          * Returns true if file exists and contains specific phrase.
          *
-         * // FIXME GG: in progress, add test case
-         *
          * @param name Name of the file.
          * @return Matching behaviour.
          */
         static Function<Path, Boolean> fileExistsWithRegExp(
             String name, String regexp
         ) {
-            return null;
-            // FIXME GG: in progress, in progress
+            return path -> {
+                try {
+                    return FileUtils
+                        .readFileToString(path.resolve(name).toFile())
+                        .matches(regexp);
+                } catch (IOException exc) {
+                    throw new IllegalStateException("Unable to read file", exc);
+                }
+            };
         }
     }
 
