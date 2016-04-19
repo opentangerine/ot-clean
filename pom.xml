@@ -11,7 +11,7 @@
 
     <groupId>com.opentangerine.clean</groupId>
     <artifactId>ot-clean</artifactId>
-    <version>0.10</version>
+    <version>0.11</version>
 
     <properties>
         <hibernate.validator>5.0.0.Final</hibernate.validator>
@@ -46,6 +46,10 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>

@@ -40,8 +40,9 @@ import org.junit.rules.TemporaryFolder;
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
  * @since 0.5
+ * @checkstyle MultipleStringLiteralsCheck (2000 lines)
  */
-@SuppressWarnings("PMD.TooManyMethods")
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.AvoidDuplicateLiterals"})
 public final class CleanTest {
 
     /**
@@ -127,15 +128,132 @@ public final class CleanTest {
             target.toFile().isDirectory(),
             Matchers.is(true)
         );
-        final Mode mode = new Mode(Mode.Arg.D.getLabel());
-        new Cleanable.Yclean(
-            new Delete(
-                mode,
-                new Summary(mode)
-            )
-        ).clean(root);
+        this.run(Wipe.Type.OT_CLEAN, root);
         MatcherAssert.assertThat(
             target.toFile().isDirectory(),
+            Matchers.is(false)
+        );
+    }
+
+    /**
+     * Delete Grails 2.x project without any configuration.
+     */
+    @Test
+    public void defaultGrailsVersionTwo() {
+        final Path root = this.createGrailsVersionTwo();
+        MatcherAssert.assertThat(
+            root.resolve("target").toFile().isDirectory(),
+            Matchers.is(true)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("subdir.log").toFile().exists(),
+            Matchers.is(true)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("subdir/target/some.log").toFile().exists(),
+            Matchers.is(true)
+        );
+        this.run(Wipe.Type.GRAILS_2, root);
+        MatcherAssert.assertThat(
+            root.resolve("target").toFile().isDirectory(),
+            Matchers.is(false)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("subdir.log").toFile().exists(),
+            Matchers.is(false)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("subdir/target/some.log").toFile().exists(),
+            Matchers.is(false)
+        );
+    }
+
+    /**
+     * Delete Grails 2.x project without any configuration.
+     */
+    @Test
+    public void defaultGrailsVersionThree() {
+        final Path root = this.createGrailsVersionThree();
+        MatcherAssert.assertThat(
+            root.resolve("build").toFile().isDirectory(),
+            Matchers.is(true)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("subdir.log").toFile().exists(),
+            Matchers.is(true)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("subdir/target/some.log").toFile().exists(),
+            Matchers.is(true)
+        );
+        this.run(Wipe.Type.GRAILS_3, root);
+        MatcherAssert.assertThat(
+            root.resolve("build").toFile().isDirectory(),
+            Matchers.is(false)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("subdir.log").toFile().exists(),
+            Matchers.is(false)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("subdir/target/some.log").toFile().exists(),
+            Matchers.is(false)
+        );
+    }
+
+    /**
+     * Delete PlayFramework 2.x project without any configuration.
+     */
+    @Test
+    public void defaultPlayVersionTwo() {
+        final Path root = this.createPlayVersionTwo();
+        MatcherAssert.assertThat(
+            root.resolve("logs/a.log").toFile().exists(),
+            Matchers.is(true)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("target/a.file").toFile().exists(),
+            Matchers.is(true)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("project/target/a.file").toFile().exists(),
+            Matchers.is(true)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("project/project/target/a.file").toFile().exists(),
+            Matchers.is(true)
+        );
+        MatcherAssert.assertThat(
+            root.resolve(".sbtserver/a.file").toFile().exists(),
+            Matchers.is(true)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("subdir/target/some.log").toFile().exists(),
+            Matchers.is(true)
+        );
+        this.run(Wipe.Type.PLAYFRAMEWORK_2, root);
+        MatcherAssert.assertThat(
+            root.resolve("logs/a.log").toFile().exists(),
+            Matchers.is(false)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("target/a.file").toFile().exists(),
+            Matchers.is(false)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("project/target/a.file").toFile().exists(),
+            Matchers.is(false)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("project/project/target/a.file").toFile().exists(),
+            Matchers.is(false)
+        );
+        MatcherAssert.assertThat(
+            root.resolve(".sbtserver/a.file").toFile().exists(),
+            Matchers.is(false)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("subdir/target/some.log").toFile().exists(),
             Matchers.is(false)
         );
     }
@@ -245,10 +363,7 @@ public final class CleanTest {
             root.resolve(CleanTest.SIMPLE_TXT).toFile().exists(),
             Matchers.is(true)
         );
-        final Mode mode = new Mode("d");
-        new Cleanable.Yclean(
-            new Delete(mode, new Summary(mode))
-        ).clean(root);
+        this.run(Wipe.Type.OT_CLEAN, root);
         MatcherAssert.assertThat(
             root.resolve(CleanTest.SIMPLE_TXT).toFile().exists(),
             Matchers.is(!deleted)
@@ -303,15 +418,70 @@ public final class CleanTest {
     }
 
     /**
-     * Create temporary file with dummy date. Skip if file is directory.
+     * Creates grails 2.x project structure.
+     * @return Temp directory of project.
+     */
+    private Path createGrailsVersionTwo() {
+        final Path root = this.folder.getRoot().toPath();
+        this.tempFile(
+            root.resolve("application.properties"),
+            "app.grails.version"
+        );
+        this.tempFile(root.resolve("target/file.txt"));
+        this.tempFile(root.resolve("target/file2.txt"));
+        this.tempFile(root.resolve("subdir.log"));
+        this.tempFile(root.resolve("subdir/target/some.log"));
+        return root;
+    }
+
+    /**
+     * Creates grails 3.x project structure.
+     * @return Temp directory of project.
+     */
+    private Path createGrailsVersionThree() {
+        final Path root = this.folder.getRoot().toPath();
+        this.tempFile(
+            root.resolve("build.gradle"),
+            "oiawef\nrsxapply plugin:\"org.grails.grails-web\"vasd"
+        );
+        this.tempFile(root.resolve("build/file.txt"));
+        this.tempFile(root.resolve("build/file2.txt"));
+        this.tempFile(root.resolve("subdir.log"));
+        this.tempFile(root.resolve("subdir/target/some.log"));
+        return root;
+    }
+
+    /**
+     * Creates playframework 2.x project structure.
+     * @return Temp directory of project.
+     */
+    private Path createPlayVersionTwo() {
+        final Path root = this.folder.getRoot().toPath();
+        this.tempFile(
+            root.resolve("build.sbt"),
+            "oiawef\nrsxenablePlugins(PlayJava)web\"vasd"
+        );
+        this.tempFile(root.resolve("logs/a.log"));
+        this.tempFile(root.resolve("target/a.file"));
+        this.tempFile(root.resolve("project/target/a.file"));
+        this.tempFile(root.resolve("project/project/target/a.file"));
+        this.tempFile(root.resolve(".sbtserver/a.file"));
+        this.tempFile(root.resolve("subdir.log"));
+        this.tempFile(root.resolve("subdir/target/some.log"));
+        return root;
+    }
+
+    /**
+     * Create temporary file with specific content. Skip if file is directory.
      *
      * @param path Target path.
+     * @param content File content.
      */
-    private void tempFile(final Path path) {
+    private void tempFile(final Path path, final String content) {
         try {
             FileUtils.touch(path.toFile());
             if (!path.toFile().isDirectory()) {
-                FileUtils.writeStringToFile(path.toFile(), "two\blines");
+                FileUtils.writeStringToFile(path.toFile(), content);
             }
         } catch (final IOException exc) {
             throw new IllegalStateException(
@@ -321,4 +491,27 @@ public final class CleanTest {
         }
     }
 
+    /**
+     * Create temporary file with dummy content. Skip if file is directory.
+     *
+     * @param path Target path.
+     */
+    private void tempFile(final Path path) {
+        this.tempFile(path, "two\nlines");
+    }
+
+    /**
+     * Execute cleaning using specific type and deleting mode.
+     * @param type Definition type.
+     * @param path Path where cleaning should be executed.
+     */
+    private void run(final Wipe.Type type, final Path path) {
+        final Mode mode = new Mode(Mode.Arg.D.getLabel());
+        Wipe.DEFAULT
+            .stream()
+            .filter(it -> it.match(type))
+            .findAny()
+            .get()
+            .clean(new Delete(mode, new Summary(mode)), path);
+    }
 }

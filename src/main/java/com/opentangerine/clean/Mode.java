@@ -63,11 +63,7 @@ public final class Mode {
         /**
          * Switch read-only mode to false.
          */
-        D("d"),
-        /**
-         * Enable recurrence mode.
-         */
-        R("r");
+        D("d");
 
         /**
          * Label.

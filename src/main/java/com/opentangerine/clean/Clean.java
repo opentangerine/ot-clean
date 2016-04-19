@@ -37,14 +37,14 @@ import java.util.Arrays;
  */
 public final class Clean {
     /**
-     * Cleaners.
-     */
-    private final transient Iterable<Cleanable> cleaners;
-
-    /**
      * Cleaning summary.
      */
     private final transient Summary summary;
+
+    /**
+     * Delete handler.
+     */
+    private final transient Delete delete;
 
     /**
      * Clean application.
@@ -58,14 +58,13 @@ public final class Clean {
     /**
      * Ctor.
      *
+     * initialization of cleanables
+     *
      * @param mode Mode.
      */
     public Clean(final Mode mode) {
         this.summary = new Summary(mode);
-        this.cleaners = Arrays.asList(
-            new Cleanable.Maven(new Delete(mode, this.summary)),
-            new Cleanable.Yclean(new Delete(mode, this.summary))
-        );
+        this.delete = new Delete(mode, this.summary);
     }
 
     /**
@@ -93,12 +92,9 @@ public final class Clean {
      * @param path Current path.
      */
     private void recurrence(final Path path) {
-        this.cleaners.forEach(
+        Wipe.DEFAULT.forEach(
             it -> {
-                if (it.match(path)) {
-                    it.display(path, new Console());
-                    it.clean(path);
-                }
+                it.clean(this.delete, path);
                 this.jump(path);
             }
         );
