@@ -43,8 +43,7 @@ import org.apache.maven.shared.utils.StringUtils;
  * @version $Id$
  * @since 0.5
  */
-// FIXME GG: in progress, rename to Wipe
-interface Cleanable {
+interface Wipe {
 
 
     /**
@@ -202,7 +201,7 @@ interface Cleanable {
         }
     }
 
-    final class Definition implements Cleanable {
+    final class Definition implements Wipe {
 
         /**
          * Name of the cleaning definition.

@@ -129,7 +129,7 @@ public final class CleanTest {
             Matchers.is(true)
         );
         final Mode mode = new Mode(Mode.Arg.D.getLabel());
-        this.get(Cleanable.Type.OT_CLEAN).clean(new Delete(mode, new Summary(mode)), root);
+        this.get(Wipe.Type.OT_CLEAN).clean(new Delete(mode, new Summary(mode)), root);
         MatcherAssert.assertThat(
             target.toFile().isDirectory(),
             Matchers.is(false)
@@ -155,7 +155,7 @@ public final class CleanTest {
             Matchers.is(true)
         );
         final Mode mode = new Mode(Mode.Arg.D.getLabel());
-        this.get(Cleanable.Type.GRAILS_2).clean(new Delete(mode, new Summary(mode)), root);
+        this.get(Wipe.Type.GRAILS_2).clean(new Delete(mode, new Summary(mode)), root);
         MatcherAssert.assertThat(
             root.resolve("target").toFile().isDirectory(),
             Matchers.is(false)
@@ -189,7 +189,7 @@ public final class CleanTest {
             Matchers.is(true)
         );
         final Mode mode = new Mode(Mode.Arg.D.getLabel());
-        this.get(Cleanable.Type.GRAILS_3).clean(new Delete(mode, new Summary(mode)), root);
+        this.get(Wipe.Type.GRAILS_3).clean(new Delete(mode, new Summary(mode)), root);
         MatcherAssert.assertThat(
             root.resolve("build").toFile().isDirectory(),
             Matchers.is(false)
@@ -235,7 +235,7 @@ public final class CleanTest {
             root.resolve("subdir/target/some.log").toFile().exists(),
             Matchers.is(true)
         );
-        this.get(Cleanable.Type.PLAYFRAMEWORK_2).clean(new Delete(mode, new Summary(mode)), root);
+        this.get(Wipe.Type.PLAYFRAMEWORK_2).clean(new Delete(mode, new Summary(mode)), root);
         MatcherAssert.assertThat(
             root.resolve("logs/a.log").toFile().exists(),
             Matchers.is(false)
@@ -368,7 +368,7 @@ public final class CleanTest {
             Matchers.is(true)
         );
         final Mode mode = new Mode("d");
-        this.get(Cleanable.Type.OT_CLEAN).clean(new Delete(mode, new Summary(mode)), root);
+        this.get(Wipe.Type.OT_CLEAN).clean(new Delete(mode, new Summary(mode)), root);
         MatcherAssert.assertThat(
             root.resolve(CleanTest.SIMPLE_TXT).toFile().exists(),
             Matchers.is(!deleted)
@@ -510,8 +510,8 @@ public final class CleanTest {
      * @param type Definition type.
      * @return Definition.
      */
-    Cleanable get(Cleanable.Type type) {
-        return Cleanable.DEFAULT
+    private Wipe get(Wipe.Type type) {
+        return Wipe.DEFAULT
             .stream()
             .filter(it -> it.is(type))
             .findAny()

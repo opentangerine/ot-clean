@@ -26,10 +26,8 @@ package com.opentangerine.clean;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.function.Function;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Rule;
@@ -37,13 +35,13 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 /**
- * This is test suit for {@link Cleanable} ddl.
+ * This is test suit for {@link Wipe} ddl.
  *
  * @author Grzegorz Gajos (grzegorz.gajos@opentangerine.com)
  * @version $Id$
  * @since 0.11
  */
-public final class CleanableTest {
+public final class WipeTest {
 
     /**
      * Temporary dir.
@@ -52,7 +50,7 @@ public final class CleanableTest {
     public transient TemporaryFolder folder = new TemporaryFolder();
 
     /**
-     * Check behaviour {@link Cleanable.If#fileExistsWithRegExp}.
+     * Check behaviour {@link Wipe.If#fileExistsWithRegExp}.
      * Should return true if specific regexp is found.
      * @throws IOException In case of exception.
      */
@@ -60,7 +58,7 @@ public final class CleanableTest {
     public void shouldFindExistingRegExpInTheFile() throws IOException {
         final File file = folder.newFile();
         FileUtils.write(file, "oiawef\nrsxenablePlugins(PlayJava)web\"vasd");
-        final Function<Path, Boolean> behaviour = Cleanable.If.fileExistsWithRegExp(file.getName(), "enablePlugins\\(PlayJava\\)");
+        final Function<Path, Boolean> behaviour = Wipe.If.fileExistsWithRegExp(file.getName(), "enablePlugins\\(PlayJava\\)");
         final Boolean result = behaviour.apply(folder.getRoot().toPath());
         MatcherAssert.assertThat(
             result,
@@ -69,7 +67,7 @@ public final class CleanableTest {
     }
 
     /**
-     * Check behaviour {@link Cleanable.If#fileExistsWithRegExp}.
+     * Check behaviour {@link Wipe.If#fileExistsWithRegExp}.
      * Should return false if specific text cannot be found.
      * @throws IOException In case of exception.
      */
@@ -77,7 +75,7 @@ public final class CleanableTest {
     public void shouldNotFindExistingRegExpInTheFile() throws IOException {
         final File file = folder.newFile();
         FileUtils.write(file, "missing");
-        final Function<Path, Boolean> behaviour = Cleanable.If.fileExistsWithRegExp(file.getName(), ".*example.*");
+        final Function<Path, Boolean> behaviour = Wipe.If.fileExistsWithRegExp(file.getName(), ".*example.*");
         final Boolean result = behaviour.apply(folder.getRoot().toPath());
         MatcherAssert.assertThat(
             result,
