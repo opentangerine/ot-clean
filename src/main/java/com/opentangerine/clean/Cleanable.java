@@ -31,6 +31,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -80,12 +81,21 @@ interface Cleanable {
     );
 
     /**
-     * Cleanup Grails structure.
+     * Cleanup Grails 2 structure.
      */
     Cleanable GRAILS_2 = new Definition(
-        "Grails 2",
+        "Grails 2.x",
         If.fileExistsWithRegExp("application.properties", "app.grails.version"),
         Then.delete("target", "**/*.log")
+    );
+
+    /**
+     * Cleanup Grails 3 structure.
+     */
+    Cleanable GRAILS_3 = new Definition(
+        "Grails 3.x",
+        If.fileExistsWithRegExp("build.gradle", "apply plugin:.*org.grails"),
+        Then.delete("build", "**/*.log")
     );
 
     /**
@@ -135,9 +145,8 @@ interface Cleanable {
             return path -> {
                 try {
                     final File file = path.resolve(name).toFile();
-                    return file.exists() && FileUtils
-                        .readFileToString(file)
-                        .matches(regexp);
+                    return file.exists() && Pattern.compile(regexp).matcher(
+                        FileUtils.readFileToString(file)).find();
                 } catch (IOException exc) {
                     throw new IllegalStateException("Unable to read file", exc);
                 }

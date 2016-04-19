@@ -171,6 +171,40 @@ public final class CleanTest {
     }
 
     /**
+     * Delete Grails 2.x project without any configuration.
+     */
+    @Test
+    public void deleteGrails3ProjectWithoutAnyConfiguration() {
+        final Path root = this.createGrails3();
+        MatcherAssert.assertThat(
+            root.resolve("build").toFile().isDirectory(),
+            Matchers.is(true)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("subdir.log").toFile().exists(),
+            Matchers.is(true)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("subdir/target/some.log").toFile().exists(),
+            Matchers.is(true)
+        );
+        final Mode mode = new Mode(Mode.Arg.D.getLabel());
+        Cleanable.GRAILS_3.clean(new Delete(mode, new Summary(mode)), root);
+        MatcherAssert.assertThat(
+            root.resolve("build").toFile().isDirectory(),
+            Matchers.is(false)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("subdir.log").toFile().exists(),
+            Matchers.is(false)
+        );
+        MatcherAssert.assertThat(
+            root.resolve("subdir/target/some.log").toFile().exists(),
+            Matchers.is(false)
+        );
+    }
+
+    /**
      * Execute cleanup from sibling directory using dirs section.
      */
     @Test
@@ -332,7 +366,7 @@ public final class CleanTest {
 
     /**
      * Creates grails 2.x project structure.
-     * @return Temp directory of grails project.
+     * @return Temp directory of project.
      */
     private Path createGrails2() {
         final Path root = this.folder.getRoot().toPath();
@@ -342,6 +376,24 @@ public final class CleanTest {
         );
         this.tempFile(root.resolve("target/file.txt"));
         this.tempFile(root.resolve("target/file2.txt"));
+        this.tempFile(root.resolve("subdir.log"));
+        this.tempFile(root.resolve("subdir/target/some.log"));
+        this.tempFile(root.resolve(CleanTest.SIMPLE_TXT));
+        return root;
+    }
+
+    /**
+     * Creates grails 3.x project structure.
+     * @return Temp directory of project.
+     */
+    private Path createGrails3() {
+        final Path root = this.folder.getRoot().toPath();
+        this.tempFile(
+            root.resolve("build.gradle"),
+            "oiawef\nrsxapply plugin:\"org.grails.grails-web\"vasd"
+        );
+        this.tempFile(root.resolve("build/file.txt"));
+        this.tempFile(root.resolve("build/file2.txt"));
         this.tempFile(root.resolve("subdir.log"));
         this.tempFile(root.resolve("subdir/target/some.log"));
         this.tempFile(root.resolve(CleanTest.SIMPLE_TXT));
