@@ -129,7 +129,7 @@ public final class CleanTest {
             Matchers.is(true)
         );
         final Mode mode = new Mode(Mode.Arg.D.getLabel());
-        Cleanable.YCLEAN.clean(new Delete(mode, new Summary(mode)), root);
+        Cleanable.DEFAULT.get(Cleanable.Type.YCLEAN).clean(new Delete(mode, new Summary(mode)), root);
         MatcherAssert.assertThat(
             target.toFile().isDirectory(),
             Matchers.is(false)
@@ -155,7 +155,7 @@ public final class CleanTest {
             Matchers.is(true)
         );
         final Mode mode = new Mode(Mode.Arg.D.getLabel());
-        Cleanable.GRAILS_2.clean(new Delete(mode, new Summary(mode)), root);
+        Cleanable.DEFAULT.get(Cleanable.Type.GRAILS_2).clean(new Delete(mode, new Summary(mode)), root);
         MatcherAssert.assertThat(
             root.resolve("target").toFile().isDirectory(),
             Matchers.is(false)
@@ -189,7 +189,7 @@ public final class CleanTest {
             Matchers.is(true)
         );
         final Mode mode = new Mode(Mode.Arg.D.getLabel());
-        Cleanable.GRAILS_3.clean(new Delete(mode, new Summary(mode)), root);
+        Cleanable.DEFAULT.get(Cleanable.Type.GRAILS_3).clean(new Delete(mode, new Summary(mode)), root);
         MatcherAssert.assertThat(
             root.resolve("build").toFile().isDirectory(),
             Matchers.is(false)
@@ -310,7 +310,7 @@ public final class CleanTest {
             Matchers.is(true)
         );
         final Mode mode = new Mode("d");
-        Cleanable.YCLEAN.clean(new Delete(mode, new Summary(mode)), root);
+        Cleanable.DEFAULT.get(Cleanable.Type.YCLEAN).clean(new Delete(mode, new Summary(mode)), root);
         MatcherAssert.assertThat(
             root.resolve(CleanTest.SIMPLE_TXT).toFile().exists(),
             Matchers.is(!deleted)

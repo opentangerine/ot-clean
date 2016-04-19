@@ -23,17 +23,16 @@
  */
 package com.opentangerine.clean;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.jcabi.log.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * This is initial class, should be changed to something else.
@@ -72,51 +71,58 @@ interface Cleanable {
     boolean match(final Path path);
 
     /**
-     * Cleanup maven structure.
+     * Available types of default cleaners.
      */
-    Cleanable MAVEN = new Definition(
-        "Maven",
-        If.fileExists("pom.xml"),
-        Then.delete("target")
-    );
-
-    /**
-     * Cleanup Grails 2 structure.
-     */
-    Cleanable GRAILS_2 = new Definition(
-        "Grails 2.x",
-        If.fileExistsWithRegExp("application.properties", "app.grails.version"),
-        Then.delete("target", "**/*.log")
-    );
-
-    /**
-     * Cleanup Grails 3 structure.
-     */
-    Cleanable GRAILS_3 = new Definition(
-        "Grails 3.x",
-        If.fileExistsWithRegExp("build.gradle", "apply plugin:.*org.grails"),
-        Then.delete("build", "**/*.log")
-    );
-
-    /**
-     * Cleanup using yaml configuration file.
-     */
-    Cleanable YCLEAN = new Definition(
-        ".clean.yml",
-        If.fileExists(".clean.yml"),
-        Then.useYmlConfig()
-    );
-
-    /**
-     * List of all available cleaners.
-     * // FIXME GG: in progress, convert to map and change this all method.
-     * // FIXME GG: in progress, extract types to enumeration
-     */
-    List<Cleanable> ALL = Lists.newArrayList(
+    enum Type {
         MAVEN,
         GRAILS_2,
+        GRAILS_3,
         YCLEAN
-    );
+    }
+
+    /**
+     * List of default cleaners.
+     */
+    Map<Type, Definition> DEFAULT = new ImmutableMap.Builder<Type, Definition>()
+        .put(
+            Type.MAVEN,
+            new Definition(
+                "Maven",
+                If.fileExists("pom.xml"),
+                Then.delete("target")
+            )
+        )
+        .put(
+            Type.GRAILS_2,
+            new Definition(
+                "Grails 2.x",
+                If.fileExistsWithRegExp(
+                    "application.properties",
+                    "app.grails.version"
+                ),
+                Then.delete("target", "**/*.log")
+            )
+        )
+        .put(
+            Type.GRAILS_3,
+            new Definition(
+                "Grails 3.x",
+                If.fileExistsWithRegExp(
+                    "build.gradle",
+                    "apply plugin:.*org.grails"
+                ),
+                Then.delete("build", "**/*.log")
+            )
+        )
+        .put(
+            Type.YCLEAN,
+            new Definition(
+                ".clean.yml",
+                If.fileExists(".clean.yml"),
+                Then.useYmlConfig()
+            )
+        )
+        .build();
 
     /**
      * Collection of behaviours for matching purposes.
@@ -229,6 +235,7 @@ interface Cleanable {
         @Override
         public void clean(final Delete delete, final Path path) {
             if(this.match(path)) {
+                this.display(path, new Console());
                 this.cleaner.accept(delete, path);
             }
         }

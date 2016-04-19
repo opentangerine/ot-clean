@@ -92,12 +92,9 @@ public final class Clean {
      * @param path Current path.
      */
     private void recurrence(final Path path) {
-        Cleanable.ALL.forEach(
+        Cleanable.DEFAULT.values().forEach(
             it -> {
-                if (it.match(path)) {
-                    it.display(path, new Console());
-                    it.clean(this.delete, path);
-                }
+                it.clean(this.delete, path);
                 this.jump(path);
             }
         );
