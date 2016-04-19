@@ -95,13 +95,8 @@ interface Cleanable {
      */
     Cleanable YCLEAN = new Definition(
         ".clean.yml",
-        path -> path.resolve(".clean.yml").toFile().exists(),
-        (delete, path) -> {
-            Yconfig
-                .load(path.resolve(".clean.yml").toFile())
-                .filesToDelete(path)
-                .forEach(delete::file);
-        }
+        If.fileExists(".clean.yml"),
+        Then.useYmlConfig()
     );
 
     /**
@@ -173,6 +168,21 @@ interface Cleanable {
             };
         }
 
+        /**
+         * Executes cleanup using deletes section in YML config.
+         *
+         * @return Deleting behaviour.
+         */
+        static BiConsumer<Delete, Path> useYmlConfig() {
+            return (delete, path) -> {
+                // FIXME GG: in progress, extract yconf so it's not needed
+                // within deletion scope
+                Yconfig
+                    .load(path.resolve(".clean.yml").toFile())
+                    .filesToDelete(path)
+                    .forEach(delete::file);
+            };
+        }
     }
 
     final class Definition implements Cleanable {
