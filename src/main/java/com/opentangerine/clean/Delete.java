@@ -75,4 +75,11 @@ public final class Delete {
         }
     }
 
+    /**
+     * Mode.
+     * @return Mode.
+     */
+    public Mode getMode() {
+        return this.mode;
+    }
 }

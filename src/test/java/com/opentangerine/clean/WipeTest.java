@@ -91,4 +91,13 @@ public final class WipeTest {
         );
     }
 
+    /**
+     * Check behaviour {@link Wipe.If#fileExistsWithRegExp}.
+     * Should throw exception when executed on directory.
+     */
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionWhenExecutedOnDir() {
+        Wipe.If.fileExistsWithRegExp(".", "")
+            .apply(this.folder.getRoot().toPath());
+    }
 }

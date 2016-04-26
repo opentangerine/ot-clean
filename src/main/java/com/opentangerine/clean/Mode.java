@@ -57,13 +57,25 @@ public final class Mode {
     }
 
     /**
+     * Verbose mode.
+     * @return True if verbose mode.
+     */
+    public boolean verbose()  {
+        return Arg.V.within(this.arguments);
+    }
+    /**
      * Enumeration of allowed program arguments.
      */
     public enum Arg {
         /**
          * Switch read-only mode to false.
          */
-        D("d");
+        D("d"),
+
+        /**
+         * Switch to verbose mode.
+         */
+        V("v");
 
         /**
          * Label.
