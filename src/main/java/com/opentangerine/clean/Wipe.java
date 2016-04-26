@@ -251,6 +251,13 @@ interface Wipe {
         @Override
         public void clean(final Delete delete, final Path path) {
             if (this.matcher.apply(path)) {
+                if (delete.getMode().verbose()) {
+                    new Console().print(
+                        String.format(
+                            "[%s]: %s", this.type.display(), path
+                        )
+                    );
+                }
                 this.cleaner.accept(delete, path);
             }
         }

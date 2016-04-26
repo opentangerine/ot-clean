@@ -101,5 +101,5 @@ You can see list of all supported arguments for current version [here](https://g
 * ✓ 0.9  - Add support for multiple base dirs (`dirs:` section)
 * ✓ 0.10 - Fix log4j configuration, updated readme
 * ✓ 0.11 - Add auto cleaner for Grails application and modules, refactoring
-* ✓ 0.12 - Do not display dirs if no files found, test coverage
+* ✓ 0.12 - Do not display dirs if no files found, test coverage, verbose mode.
 *   1.0  - Test cases refactoring and test coverage
