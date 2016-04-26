@@ -88,18 +88,18 @@ ot-clean -d
 
 You can see list of all supported arguments for current version [here](https://github.com/ggajos/ot-clean/blob/master/src/main/resources/ot-clean/help.txt).
 
-## Roadmap
+## Changelog
 
 * ✓ 0.1  - Clean maven project in current directory without using maven
 * ✓ 0.2  - Recurrence parameter `r`
 * ✓ 0.3  - Add support to delete custom directories via .clean.yml
 * ✓ 0.4  - Support wildcards
-* ✓ 0.5  - Preprocess Yaml file so double quotes are no longer needed.
-* ✓ 0.6  - Add summary about deleted files, dirs and empty total space.
-* ✓ 0.7  - Add application version automatically from maven project.
+* ✓ 0.5  - Preprocess Yaml file so double quotes are no longer needed
+* ✓ 0.6  - Add summary about deleted files, dirs and empty total space
+* ✓ 0.7  - Add application version automatically from maven project
 * ✓ 0.8  - Removed recurrence parameter `r`, cleanup, added coveralls
 * ✓ 0.9  - Add support for multiple base dirs (`dirs:` section)
 * ✓ 0.10 - Fix log4j configuration, updated readme
 * ✓ 0.11 - Add auto cleaner for Grails application and modules, refactoring
-* ✓ 0.12 - Do not display dirs if no files found, test coverage, verbose mode.
-*   1.0  - Test cases refactoring and test coverage
+* ✓ 0.12 - Do not display dirs if no files found, test coverage, verbose mode
+* ✓ 1.0  - Test cases refactoring, test coverage, final release
