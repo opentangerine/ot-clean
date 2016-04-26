@@ -145,13 +145,7 @@ interface Wipe {
     /**
      * Collection of behaviours for matching purposes.
      */
-    final class If {
-
-        /**
-         * Hide Ctor of utility class.
-         */
-        private If() {
-        }
+    interface If {
 
         /**
          * Returns true if file exists.
@@ -159,7 +153,7 @@ interface Wipe {
          * @param name Name of the file.
          * @return Matching behaviour.
          */
-        public static Function<Path, Boolean> fileExists(final String name) {
+        static Function<Path, Boolean> fileExists(final String name) {
             return path -> path.resolve(name).toFile().exists();
         }
 
@@ -170,7 +164,7 @@ interface Wipe {
          * @param regexp Regular expression to search for.
          * @return Matching behaviour.
          */
-        public static Function<Path, Boolean> fileExistsWithRegExp(
+        static Function<Path, Boolean> fileExistsWithRegExp(
             final String name, final String regexp
         ) {
             return path -> {
@@ -190,13 +184,7 @@ interface Wipe {
     /**
      * Collection of behaviours for cleaning purposes.
      */
-    final class Then {
-
-        /**
-         * Hide Ctor of utility class.
-         */
-        private Then() {
-        }
+    interface Then {
 
         /**
          * Executes cleanup using list of paths. RegExps are allowed.
@@ -204,7 +192,7 @@ interface Wipe {
          * @param deletes List of paths.
          * @return Deleting behaviour.
          */
-        public static BiConsumer<Delete, Path> delete(final String... deletes) {
+        static BiConsumer<Delete, Path> delete(final String... deletes) {
             return (delete, path) -> new Scan()
                 .scan(path, deletes)
                 .forEach(delete::file);
@@ -215,7 +203,7 @@ interface Wipe {
          *
          * @return Deleting behaviour.
          */
-        public static BiConsumer<Delete, Path> useYmlConfig() {
+        static BiConsumer<Delete, Path> useYmlConfig() {
             return (delete, path) -> Yconfig
                 .load(path.resolve(".clean.yml").toFile())
                 .filesToDelete(path)
@@ -263,11 +251,6 @@ interface Wipe {
         @Override
         public void clean(final Delete delete, final Path path) {
             if (this.matcher.apply(path)) {
-                new Console().print(
-                    String.format(
-                        "[%s]: %s", this.type.display(), path
-                    )
-                );
                 this.cleaner.accept(delete, path);
             }
         }
