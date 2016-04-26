@@ -205,11 +205,9 @@ interface Wipe {
          * @return Deleting behaviour.
          */
         public static BiConsumer<Delete, Path> delete(final String... deletes) {
-            return (delete, path) -> {
-                new Scan()
-                    .scan(path, deletes)
-                    .forEach(delete::file);
-            };
+            return (delete, path) -> new Scan()
+                .scan(path, deletes)
+                .forEach(delete::file);
         }
 
         /**
@@ -218,12 +216,10 @@ interface Wipe {
          * @return Deleting behaviour.
          */
         public static BiConsumer<Delete, Path> useYmlConfig() {
-            return (delete, path) -> {
-                Yconfig
-                    .load(path.resolve(".clean.yml").toFile())
-                    .filesToDelete(path)
-                    .forEach(delete::file);
-            };
+            return (delete, path) -> Yconfig
+                .load(path.resolve(".clean.yml").toFile())
+                .filesToDelete(path)
+                .forEach(delete::file);
         }
     }
 
