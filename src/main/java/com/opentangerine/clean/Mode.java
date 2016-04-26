@@ -61,7 +61,7 @@ public final class Mode {
      * @return True if verbose mode.
      */
     public boolean verbose()  {
-        return !Arg.V.within(this.arguments);
+        return Arg.V.within(this.arguments);
     }
     /**
      * Enumeration of allowed program arguments.
