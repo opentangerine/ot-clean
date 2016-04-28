@@ -266,11 +266,17 @@ interface Wipe {
 
         @Override
         public void clean(final Delete delete, final Path path) {
+            final boolean result = this.matcher.apply(path);
             Logger.debug(
                 this,
-                String.format("[%s] match = %s", path, this.matcher.apply(path))
+                String.format(
+                    "[%s] is [%s] for %s",
+                    this.type.display(),
+                    result,
+                    path.toAbsolutePath()
+                )
             );
-            if (this.matcher.apply(path)) {
+            if (result) {
                 if (delete.getMode().verbose()) {
                     new Console().print(
                         String.format(

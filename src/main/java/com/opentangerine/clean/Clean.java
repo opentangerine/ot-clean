@@ -23,6 +23,7 @@
  */
 package com.opentangerine.clean;
 
+import com.jcabi.log.Logger;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -114,7 +115,13 @@ public final class Clean {
     private void jump(final Path path) {
         Yconfig
             .load(path.resolve(".clean.yml").toFile())
-            .dirs().forEach(this::recurrence);
+            .dirs().forEach(
+                (it) -> {
+                    final Path target = path.resolve(it);
+                    Logger.debug(this, "Jumping to %s", target);
+                    this.recurrence(target);
+                }
+            );
     }
 
 }
