@@ -24,6 +24,7 @@
 package com.opentangerine.clean;
 
 import com.google.common.collect.Lists;
+import com.jcabi.log.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -168,15 +169,30 @@ interface Wipe {
             final String name, final String regexp
         ) {
             return path -> {
+                boolean result = false;
                 try {
                     final File file = path.resolve(name).toFile();
-                    return file.exists() && Pattern
-                        .compile(regexp)
-                        .matcher(FileUtils.readFileToString(file))
-                        .find();
+                    if (file.exists()) {
+                        final String text = FileUtils.readFileToString(file);
+                        result = Pattern.compile(regexp).matcher(text).find();
+                        Logger.debug(
+                            If.class,
+                            String.format(
+                                "File found with size: %s | Regexp = %s",
+                                text.length(),
+                                result
+                            )
+                        );
+                    } else {
+                        Logger.debug(
+                            If.class,
+                            String.format("File not found: %s", file)
+                        );
+                    }
                 } catch (final IOException exc) {
                     throw new IllegalStateException("Unable to read file", exc);
                 }
+                return result;
             };
         }
     }
@@ -250,6 +266,10 @@ interface Wipe {
 
         @Override
         public void clean(final Delete delete, final Path path) {
+            Logger.debug(
+                this,
+                String.format("[%s] match = %s", path, this.matcher.apply(path))
+            );
             if (this.matcher.apply(path)) {
                 if (delete.getMode().verbose()) {
                     new Console().print(

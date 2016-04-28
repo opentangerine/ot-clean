@@ -23,6 +23,7 @@
  */
 package com.opentangerine.clean;
 
+import com.jcabi.log.Logger;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -63,12 +64,12 @@ public final class CleanTest {
     public void isNotDeletingByDefault() {
         final Path target = this.createMavenAndGetTarget();
         MatcherAssert.assertThat(
-            target.toFile().isDirectory(),
+            target.toFile().exists(),
             Matchers.is(true)
         );
         new Clean("").clean(Paths.get(this.folder.getRoot().toURI()));
         MatcherAssert.assertThat(
-            target.toFile().isDirectory(),
+            target.toFile().exists(),
             Matchers.is(true)
         );
     }
@@ -88,12 +89,12 @@ public final class CleanTest {
     public void deleteTargetDirectoryForMavenProject() {
         final Path target = this.createMavenAndGetTarget();
         MatcherAssert.assertThat(
-            target.toFile().isDirectory(),
+            target.toFile().exists(),
             Matchers.is(true)
         );
         new Clean("-d").clean(Paths.get(this.folder.getRoot().toURI()));
         MatcherAssert.assertThat(
-            target.toFile().isDirectory(),
+            target.toFile().exists(),
             Matchers.is(false)
         );
     }
@@ -106,12 +107,12 @@ public final class CleanTest {
         final Path root = this.createProject();
         final String subdir = "subdir/target";
         MatcherAssert.assertThat(
-            root.resolve(subdir).toFile().isDirectory(),
+            root.resolve(subdir).toFile().exists(),
             Matchers.is(true)
         );
         new Clean("dr").clean(Paths.get(this.folder.getRoot().toURI()));
         MatcherAssert.assertThat(
-            root.resolve(subdir).toFile().isDirectory(),
+            root.resolve(subdir).toFile().exists(),
             Matchers.is(false)
         );
     }
@@ -125,12 +126,12 @@ public final class CleanTest {
         final Path root = target.getParent();
         this.writeYml(root, "deletes:\n - target");
         MatcherAssert.assertThat(
-            target.toFile().isDirectory(),
+            target.toFile().exists(),
             Matchers.is(true)
         );
         this.run(Wipe.Type.OT_CLEAN, root);
         MatcherAssert.assertThat(
-            target.toFile().isDirectory(),
+            target.toFile().exists(),
             Matchers.is(false)
         );
     }
@@ -142,7 +143,7 @@ public final class CleanTest {
     public void defaultGrailsVersionTwo() {
         final Path root = this.createGrailsVersionTwo();
         MatcherAssert.assertThat(
-            root.resolve("target").toFile().isDirectory(),
+            root.resolve("target").toFile().exists(),
             Matchers.is(true)
         );
         MatcherAssert.assertThat(
@@ -155,7 +156,7 @@ public final class CleanTest {
         );
         this.run(Wipe.Type.GRAILS_2, root);
         MatcherAssert.assertThat(
-            root.resolve("target").toFile().isDirectory(),
+            root.resolve("target").toFile().exists(),
             Matchers.is(false)
         );
         MatcherAssert.assertThat(
@@ -175,7 +176,7 @@ public final class CleanTest {
     public void defaultGrailsVersionThree() {
         final Path root = this.createGrailsVersionThree();
         MatcherAssert.assertThat(
-            root.resolve("build").toFile().isDirectory(),
+            root.resolve("build").toFile().exists(),
             Matchers.is(true)
         );
         MatcherAssert.assertThat(
@@ -188,7 +189,7 @@ public final class CleanTest {
         );
         this.run(Wipe.Type.GRAILS_3, root);
         MatcherAssert.assertThat(
-            root.resolve("build").toFile().isDirectory(),
+            root.resolve("build").toFile().exists(),
             Matchers.is(false)
         );
         MatcherAssert.assertThat(
@@ -279,12 +280,12 @@ public final class CleanTest {
         );
         final Mode mode = new Mode(Mode.Arg.D.getLabel());
         MatcherAssert.assertThat(
-            root.resolve("one/todelete").toFile().isDirectory(),
+            root.resolve("one/todelete").toFile().exists(),
             Matchers.is(true)
         );
         new Clean(mode).clean(root.resolve(two));
         MatcherAssert.assertThat(
-            root.resolve("one/target").toFile().isDirectory(),
+            root.resolve("one/target").toFile().exists(),
             Matchers.is(false)
         );
     }
@@ -480,9 +481,8 @@ public final class CleanTest {
     private void tempFile(final Path path, final String content) {
         try {
             FileUtils.touch(path.toFile());
-            if (!path.toFile().isDirectory()) {
-                FileUtils.writeStringToFile(path.toFile(), content);
-            }
+            FileUtils.writeStringToFile(path.toFile(), content);
+            Logger.debug(this, "Created temp file: %s", path);
         } catch (final IOException exc) {
             throw new IllegalStateException(
                 "Unable to create maven project structure",
@@ -506,7 +506,7 @@ public final class CleanTest {
      * @param path Path where cleaning should be executed.
      */
     private void run(final Wipe.Type type, final Path path) {
-        final Mode mode = new Mode(Mode.Arg.D.getLabel());
+        final Mode mode = new Mode("vd");
         Wipe.DEFAULT
             .stream()
             .filter(it -> it.match(type))
