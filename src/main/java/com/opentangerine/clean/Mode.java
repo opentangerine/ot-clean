@@ -100,14 +100,6 @@ public final class Mode {
         }
 
         /**
-         * Argument label.
-         * @return Label value.
-         */
-        public String getLabel() {
-            return this.label;
-        }
-
-        /**
          * Combine all arguments and remove dash.
          * @param args Args list.
          * @return Arguments as plain string.

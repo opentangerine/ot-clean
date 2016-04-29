@@ -25,6 +25,7 @@ package com.opentangerine.clean;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -38,6 +39,19 @@ import org.yaml.snakeyaml.error.YAMLException;
  * @since 0.5
  */
 public final class YconfigTest {
+
+    /**
+     * Throws illegal state exception when file is unknown.
+     * @throws IOException if fails.
+     */
+    @Test(expected = IllegalStateException.class)
+    public void ioErrorDuringFileRead() throws IOException {
+        File file = File.createTempFile("test", "test");
+        file.deleteOnExit();
+        final RandomAccessFile random = new RandomAccessFile(file, "rw");
+        random.getChannel().lock();
+        Yconfig.load(file);
+    }
 
     /**
      * Check if empty file is ok for parser.

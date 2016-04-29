@@ -64,7 +64,8 @@ public final class CleanTest {
      * Execute main entry point of application.
      */
     @Test
-    public void canWorkOnEmptyDirectory() {
+    public void noExceptionInRegularAppEntry() {
+        Clean.main("v");
         Clean.main("");
     }
 
