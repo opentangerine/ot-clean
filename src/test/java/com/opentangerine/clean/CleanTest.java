@@ -60,11 +60,11 @@ public final class CleanTest {
     }
 
     /**
-     * Check how clean is working on empty directory.
+     * Execute main entry point of application.
      */
     @Test
     public void canWorkOnEmptyDirectory() {
-        new Check().run();
+        Clean.main("");
     }
 
     /**
