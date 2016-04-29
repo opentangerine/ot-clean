@@ -24,6 +24,7 @@
 package com.opentangerine.clean;
 
 import com.jcabi.log.Logger;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import org.apache.commons.io.FileUtils;
@@ -308,11 +309,14 @@ public final class CleanTest {
          */
         public Check file(final String relative, final String content) {
             try {
-                final Path path = this.root.resolve(relative);
-                if (!path.toFile().exists()) {
-                    FileUtils.forceMkdir(path.getParent().toFile());
-                    FileUtils.writeStringToFile(path.toFile(), content);
-                    Logger.debug(this, "Created temp file: %s", path);
+                final File target = this.root
+                    .resolve(relative)
+                    .toFile()
+                    .getCanonicalFile();
+                if (!target.exists()) {
+                    FileUtils.forceMkdir(new File(target.getParent()));
+                    FileUtils.writeStringToFile(target, content);
+                    Logger.debug(this, "Created temp file: %s", target);
                 }
             } catch (final IOException exc) {
                 throw new IllegalStateException(
