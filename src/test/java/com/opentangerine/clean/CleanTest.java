@@ -310,7 +310,7 @@ public final class CleanTest {
             try {
                 final Path path = this.root.resolve(relative);
                 if (!path.toFile().exists()) {
-                    FileUtils.touch(path.toFile());
+                    FileUtils.forceMkdir(path.getParent().toFile());
                     FileUtils.writeStringToFile(path.toFile(), content);
                     Logger.debug(this, "Created temp file: %s", path);
                 }

@@ -78,6 +78,7 @@ public final class Clean {
         if (new Mode(args).verbose()) {
             org.apache.log4j.Logger.getRootLogger().setLevel(Level.DEBUG);
         }
+        Logger.info(Clean.class, Res.resource("/ot-clean/help.txt"));
         new Clean(args).clean(Paths.get(System.getProperty("user.dir")));
     }
 
