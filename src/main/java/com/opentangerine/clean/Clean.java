@@ -28,6 +28,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import org.apache.log4j.Level;
 
 /**
  * This is initial class, should be changed to something else.
@@ -74,6 +75,9 @@ public final class Clean {
      * @param args Application arguments.
      */
     public static void main(final String... args) {
+        if (new Mode(args).verbose()) {
+            org.apache.log4j.Logger.getRootLogger().setLevel(Level.DEBUG);
+        }
         new Clean(args).clean(Paths.get(System.getProperty("user.dir")));
     }
 
@@ -116,8 +120,8 @@ public final class Clean {
         Yconfig
             .load(path.resolve(".clean.yml").toFile())
             .dirs().forEach(
-                (it) -> {
-                    final Path target = path.resolve(it);
+                (dir) -> {
+                    final Path target = path.resolve(dir);
                     Logger.debug(this, "Jumping to %s", target);
                     this.recurrence(target);
                 }

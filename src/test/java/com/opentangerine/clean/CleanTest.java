@@ -26,7 +26,6 @@ package com.opentangerine.clean;
 import com.jcabi.log.Logger;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.MatcherAssert;
@@ -56,7 +55,7 @@ public final class CleanTest {
      * Check how clean is working in default mode.
      */
     @Test
-    public void isNotDeletingByDefault() {
+    public void canSkipDeleteByDefault() {
         new Check(true, "target").run();
     }
 
@@ -64,7 +63,7 @@ public final class CleanTest {
      * Check how clean is working on empty directory.
      */
     @Test
-    public void isNotThrowingExceptionOnEmptyDir() {
+    public void canWorkOnEmptyDirectory() {
         new Check().run();
     }
 
@@ -72,24 +71,18 @@ public final class CleanTest {
      * Check how clean is working in delete mode.
      */
     @Test
-    public void deleteTargetDirectoryForMavenProject() {
-        new Check(
-            "target/file.txt",
-            "target/file2.txt"
-        )
+    public void canFindAndDeleteMavenTarget() {
+        new Check("target/file.txt", "target/file2.txt")
             .file("pom.xml")
             .run(Wipe.Type.MAVEN);
     }
 
     /**
-     * Check how clean is working in delete mode.
+     * Check how clean is working in delete mode on subdirectories.
      */
     @Test
-    public void deleteTargetSubdirForMavenProject() {
-        new Check(
-            "subdir/target/file2.txt",
-            "subdir/target/simple.txt"
-        )
+    public void canFindAndDeleteMavenTargetInSubdir() {
+        new Check("subdir/target/file2.txt", "subdir/target/simple.txt")
             .file("subdir/pom.xml")
             .run();
     }
@@ -99,10 +92,7 @@ public final class CleanTest {
      */
     @Test
     public void deleteProjectUsingYamlConfig() {
-        new Check(
-            "some/file.txt",
-            "some/b.txt"
-        )
+        new Check("some/file.txt", "some/b.txt")
             .file(".clean.yml", "deletes:\n - some")
             .run(Wipe.Type.OT_CLEAN);
     }
@@ -112,11 +102,7 @@ public final class CleanTest {
      */
     @Test
     public void defaultGrailsVersionTwo() {
-        new Check(
-            "target",
-            "subdir.log",
-            "subdir/target/some.log"
-        )
+        new Check("target", "subdir.log", "subdir/target/some.log")
             .file("application.properties", "app.grails.version")
             .run(Wipe.Type.GRAILS_2);
     }
@@ -126,11 +112,7 @@ public final class CleanTest {
      */
     @Test
     public void defaultGrailsVersionThree() {
-        new Check(
-            "build",
-            "subdir.log",
-            "subdir/target/some.log"
-        )
+        new Check("build", "subdir.log", "subdir/target/some.log")
             .file(
                 "build.gradle",
                 "oiawef\nrsxapply plugin:\"org.grails.grails-web\"vasd"
@@ -163,9 +145,6 @@ public final class CleanTest {
      */
     @Test
     public void cleanupProjectStartingFromDifferentDirectory() {
-        // FIXME GG: in progress, finish test refactor
-        // FIXME GG: in progress, update test names to let it be more valid naming
-        // FIXME GG: in progress, check if we can enable debug mode of log4j programatically
         new Check(
             "two",
             false,
@@ -249,20 +228,9 @@ public final class CleanTest {
         final String pattern,
         final boolean deleted
     ) {
-        this.file(this.root().resolve("subdir/sub/simple.txt"));
-        this.writeYml(
-            this.root(),
-            StringUtils.join("deletes:\n - ", pattern)
-        );
-        MatcherAssert.assertThat(
-            this.root().resolve("subdir/sub/simple.txt").toFile().exists(),
-            Matchers.is(true)
-        );
-        this.run(Wipe.Type.OT_CLEAN, this.root());
-        MatcherAssert.assertThat(
-            this.root().resolve("subdir/sub/simple.txt").toFile().exists(),
-            Matchers.is(!deleted)
-        );
+        new Check(!deleted, "subdir/sub/simple.txt")
+            .file(".clean.yml", StringUtils.join("deletes:\n - ", pattern))
+            .run(Wipe.Type.OT_CLEAN);
     }
 
     /**
@@ -274,89 +242,25 @@ public final class CleanTest {
     }
 
     /**
-     * Create yml file.
-     * @param root Directory.
-     * @param content Content.
+     * Class responsible for performing cleanup operation using specific
+     * cleaner. It creates and validates files removal with smart way so it
+     * minimizes number of possible mistakes and makes tests more DRY.
      */
-    private void writeYml(final Path root, final String content) {
-        try {
-            FileUtils.writeStringToFile(
-                root.resolve(".clean.yml").toFile(),
-                content
-            );
-        } catch (final IOException exc) {
-            throw new IllegalStateException("Failed", exc);
-        }
-    }
-
-    /**
-     * Get root path.
-     * @return Root path.
-     */
-    private Path root() {
-        return this.folder.getRoot().toPath();
-    }
-
-    /**
-     * Create temporary file with specific content. Skip if file is directory.
-     *
-     * @param path Target path.
-     * @param content File content.
-     */
-    private void file(final Path path, final String content) {
-        try {
-            if(!path.toFile().exists()) {
-                FileUtils.touch(path.toFile());
-                FileUtils.writeStringToFile(path.toFile(), content);
-                Logger.debug(this, "Created temp file: %s", path);
-            }
-        } catch (final IOException exc) {
-            throw new IllegalStateException(
-                "Unable to create file",
-                exc
-            );
-        }
-    }
-
-    /**
-     * Create temporary file with dummy content. Skip if file is directory.
-     *
-     * @param path Target path.
-     */
-    private void file(final Path path) {
-        this.file(path, "two\nlines");
-    }
-
-    /**
-     * Execute cleaning using specific type and deleting mode.
-     * @param type Definition type.
-     * @param path Path where cleaning should be executed.
-     */
-    private void run(final Wipe.Type type, final Path path) {
-        final Mode mode = new Mode("vd");
-        Wipe.DEFAULT
-            .stream()
-            .filter(it -> it.match(type))
-            .findAny()
-            .get()
-            .clean(new Delete(mode, new Summary(mode)), path);
-    }
-
     public final class Check {
         /**
          * Working dir.
          */
-        private Path root = CleanTest.this.folder.getRoot().toPath();
+        private final transient Path root;
 
         /**
          * List of files to create and check if are deleted.
          */
-        final String[] files;
+        private final transient String[] files;
 
         /**
          * In which state file should be after deletion.
          */
-        private boolean exists = false;
+        private final transient boolean exists;
 
         /**
          * Ctor.
@@ -389,7 +293,8 @@ public final class CleanTest {
             final boolean cexists,
             final String... cfiles
         ) {
-            this.root = this.root.resolve(crelative);
+            this.root = CleanTest.this.folder.getRoot().toPath()
+                .resolve(crelative);
             this.exists = cexists;
             this.files = cfiles;
         }
@@ -404,7 +309,7 @@ public final class CleanTest {
         public Check file(final String relative, final String content) {
             try {
                 final Path path = this.root.resolve(relative);
-                if(!path.toFile().exists()) {
+                if (!path.toFile().exists()) {
                     FileUtils.touch(path.toFile());
                     FileUtils.writeStringToFile(path.toFile(), content);
                     Logger.debug(this, "Created temp file: %s", path);
@@ -437,18 +342,19 @@ public final class CleanTest {
 
         /**
          * Run cleaning mode for specific type.
-         * @param type
+         * @param type Type of cleaning.
          */
         public void run(final Wipe.Type type) {
-            this.exec(() -> Wipe.DEFAULT
-                .stream()
-                .filter(it -> it.match(type))
-                .findAny()
-                .get()
-                .clean(
-                    new Delete(this.mode(), new Summary(this.mode())),
-                    this.root
-                )
+            this.exec(
+                () -> Wipe.DEFAULT
+                    .stream()
+                    .filter(it -> it.match(type))
+                    .findAny()
+                    .get()
+                    .clean(
+                        new Delete(this.mode(), new Summary(this.mode())),
+                        this.root
+                    )
             );
         }
 
@@ -458,16 +364,16 @@ public final class CleanTest {
          *
          * @param runnable Cleaning operation.
          */
-        private void exec(Runnable runnable) {
-            for(String relative : this.files) {
-                CleanTest.this.file(this.root.resolve(relative));
+        private void exec(final Runnable runnable) {
+            for (final String relative : this.files) {
+                this.file(relative);
                 MatcherAssert.assertThat(
                     this.root.resolve(relative).toFile().exists(),
                     Matchers.is(true)
                 );
             }
             runnable.run();
-            for(String relative : this.files) {
+            for (final String relative : this.files) {
                 MatcherAssert.assertThat(
                     String.format("File should be deleted %s", relative),
                     this.root.resolve(relative).toFile().exists(),
@@ -476,9 +382,13 @@ public final class CleanTest {
             }
         }
 
+        /**
+         * Generate verbose mode using checking arguments.
+         * @return Cleaning mode.
+         */
         private Mode mode() {
             Mode mode = new Mode("-vd");
-            if(exists) {
+            if (this.exists) {
                 mode = new Mode("-v");
             }
             return mode;

@@ -277,13 +277,6 @@ interface Wipe {
                 )
             );
             if (result) {
-                if (delete.getMode().verbose()) {
-                    new Console().print(
-                        String.format(
-                            "[%s]: %s", this.type.display(), path
-                        )
-                    );
-                }
                 this.cleaner.accept(delete, path);
             }
         }
