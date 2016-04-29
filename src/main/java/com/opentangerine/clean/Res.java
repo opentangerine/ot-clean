@@ -26,7 +26,6 @@ package com.opentangerine.clean;
 import com.jcabi.log.Logger;
 import java.io.IOException;
 import java.io.InputStream;
-import javax.validation.constraints.NotNull;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
 

@@ -65,24 +65,30 @@ public final class Summary {
     public void add(final File file) {
         this.count += 1;
         this.total += FileUtils.sizeOf(file);
-        Logger.info(Clean.class, String.format(
-            "%s %s: %s [%s]",
-            Summary.info(this.mode.readonly(), "Found", "Deleting"),
-            Summary.info(file.isDirectory(), "directory", "file"),
-            file,
-            FileUtils.byteCountToDisplaySize(FileUtils.sizeOf(file))
-        ));
+        Logger.info(
+            Clean.class,
+            String.format(
+                "%s %s: %s [%s]",
+                Summary.info(this.mode.readonly(), "Found", "Deleting"),
+                Summary.info(file.isDirectory(), "directory", "file"),
+                file,
+                FileUtils.byteCountToDisplaySize(FileUtils.sizeOf(file))
+            )
+        );
     }
 
     /**
      * Display summary based on current state.
      */
     public void finished() {
-        Logger.info(Clean.class, String.format(
-            "Summary: Found %s element(s) [%s]",
-            this.count,
-            FileUtils.byteCountToDisplaySize(this.total)
-        ));
+        Logger.info(
+            Clean.class,
+            String.format(
+                "Summary: Found %s element(s) [%s]",
+                this.count,
+                FileUtils.byteCountToDisplaySize(this.total)
+            )
+        );
     }
 
     /**
