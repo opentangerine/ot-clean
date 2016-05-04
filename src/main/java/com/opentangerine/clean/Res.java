@@ -36,14 +36,7 @@ import org.apache.commons.lang3.Validate;
  * @version $Id$
  * @since 0.10
  */
-public final class Res {
-
-    /**
-     * Private Ctor.
-     */
-    private Res() {
-        // Private
-    }
+interface Res {
 
     /**
      * Load resource under specific path.
@@ -51,7 +44,7 @@ public final class Res {
      * @param path Resource path.
      * @return Content.
      */
-    public static String resource(final String path) {
+    static String resource(final String path) {
         try {
             final InputStream stream = Res.class.getResourceAsStream(path);
             Validate.isTrue(stream != null, "File not found");

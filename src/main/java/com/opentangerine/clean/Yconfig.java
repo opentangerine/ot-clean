@@ -99,35 +99,43 @@ public final class Yconfig {
         Yconfig config = new Yconfig();
         if (file.exists()) {
             config = Optional.ofNullable(
-                new Yaml().loadAs(preprocess(file), Yconfig.class)
+                new Yaml().loadAs(Tool.preprocess(file), Yconfig.class)
             ).orElse(config);
         }
         return config;
     }
 
     /**
-     * Preprocess input file and append double quotes for all paths in the file.
-     *
-     * @param file File.
-     * @return Preprocessed file.
+     * Yml related tools.
      */
-    private static String preprocess(final File file) {
-        try {
-            final String text = FileUtils.readFileToString(file);
-            final String pattern = "- *";
-            return new Replace(text).replace(
-                line -> line.contains(pattern),
-                line -> StringUtils.join(
-                    StringUtils.replace(line, pattern, "- \"*"),
-                    "\""
-                )
-            ).output();
-        } catch (final IOException exc) {
-            throw new IllegalStateException(
-                "Unable to read config file",
-                exc
-            );
+    public interface Tool {
+
+        /**
+         * Preprocess input file and append double quotes
+         * for all paths in the file.
+         *
+         * @param file File.
+         * @return Preprocessed file.
+         */
+        static String preprocess(final File file) {
+            try {
+                final String text = FileUtils.readFileToString(file);
+                final String pattern = "- *";
+                return new Replace(text).replace(
+                    line -> line.contains(pattern),
+                    line -> StringUtils.join(
+                        StringUtils.replace(line, pattern, "- \"*"),
+                        "\""
+                    )
+                ).output();
+            } catch (final IOException exc) {
+                throw new IllegalStateException(
+                    "Unable to read config file",
+                    exc
+                );
+            }
         }
+
     }
 
 }

@@ -40,6 +40,15 @@ import org.yaml.snakeyaml.error.YAMLException;
 public final class YconfigTest {
 
     /**
+     * Throws illegal state exception when file is unknown.
+     * @throws IOException if fails.
+     */
+    @Test(expected = IllegalStateException.class)
+    public void ioErrorDuringFileRead() throws IOException {
+        Yconfig.Tool.preprocess(new File("unknown"));
+    }
+
+    /**
      * Check if empty file is ok for parser.
      * @throws IOException if fails.
      */

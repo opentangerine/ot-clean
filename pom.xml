@@ -11,7 +11,7 @@
 
     <groupId>com.opentangerine.clean</groupId>
     <artifactId>ot-clean</artifactId>
-    <version>0.12</version>
+    <version>1.0</version>
 
     <properties>
         <hibernate.validator>5.0.0.Final</hibernate.validator>
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <scope>runtime</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>

@@ -23,6 +23,7 @@
  */
 package com.opentangerine.clean;
 
+import com.jcabi.log.Logger;
 import java.io.File;
 import org.apache.commons.io.FileUtils;
 
@@ -40,10 +41,6 @@ public final class Summary {
      */
     private final transient Mode mode;
     /**
-     * Output console.
-     */
-    private final transient Console console;
-    /**
      * Total bytes.
      */
     private transient long total;
@@ -57,7 +54,6 @@ public final class Summary {
      * @param cmode Execution mode.
      */
     public Summary(final Mode cmode) {
-        this.console = new Console().help();
         this.mode = cmode;
     }
 
@@ -69,9 +65,10 @@ public final class Summary {
     public void add(final File file) {
         this.count += 1;
         this.total += FileUtils.sizeOf(file);
-        this.console.print(
+        Logger.info(
+            Clean.class,
             String.format(
-                " - %s %s: %s [%s]",
+                "%s %s: %s [%s]",
                 Summary.info(this.mode.readonly(), "Found", "Deleting"),
                 Summary.info(file.isDirectory(), "directory", "file"),
                 file,
@@ -84,8 +81,8 @@ public final class Summary {
      * Display summary based on current state.
      */
     public void finished() {
-        this.console.print("");
-        this.console.print(
+        Logger.info(
+            Clean.class,
             String.format(
                 "Summary: Found %s element(s) [%s]",
                 this.count,

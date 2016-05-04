@@ -23,9 +23,10 @@
  */
 package com.opentangerine.clean;
 
+import com.jcabi.log.Logger;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.MatcherAssert;
@@ -46,11 +47,6 @@ import org.junit.rules.TemporaryFolder;
 public final class CleanTest {
 
     /**
-     * Simple text file.
-     */
-    private static final String SIMPLE_TXT = "subdir/sub/simple.txt";
-
-    /**
      * Temporary dir.
      */
     @Rule
@@ -60,79 +56,47 @@ public final class CleanTest {
      * Check how clean is working in default mode.
      */
     @Test
-    public void isNotDeletingByDefault() {
-        final Path target = this.createMavenAndGetTarget();
-        MatcherAssert.assertThat(
-            target.toFile().isDirectory(),
-            Matchers.is(true)
-        );
-        new Clean("").clean(Paths.get(this.folder.getRoot().toURI()));
-        MatcherAssert.assertThat(
-            target.toFile().isDirectory(),
-            Matchers.is(true)
-        );
+    public void canSkipDeleteByDefault() {
+        new Check(true, "target").run();
     }
 
     /**
-     * Check how clean is working on random directory.
+     * Execute main entry point of application.
      */
     @Test
-    public void noExceptionOnEmptyDir() {
-        new Clean("").clean(Paths.get(this.folder.getRoot().toURI()));
+    public void noExceptionInRegularAppEntry() {
+        Clean.main("v");
+        Clean.main("");
     }
 
     /**
      * Check how clean is working in delete mode.
      */
     @Test
-    public void deleteTargetDirectoryForMavenProject() {
-        final Path target = this.createMavenAndGetTarget();
-        MatcherAssert.assertThat(
-            target.toFile().isDirectory(),
-            Matchers.is(true)
-        );
-        new Clean("-d").clean(Paths.get(this.folder.getRoot().toURI()));
-        MatcherAssert.assertThat(
-            target.toFile().isDirectory(),
-            Matchers.is(false)
-        );
+    public void canFindAndDeleteMavenTarget() {
+        new Check("target/file.txt", "target/file2.txt")
+            .file("pom.xml")
+            .run(Wipe.Type.MAVEN);
     }
 
     /**
-     * Check how clean is working in delete mode.
+     * Check how clean is working in delete mode on subdirectories.
      */
     @Test
-    public void deleteTargetSubdirForMavenProject() {
-        final Path root = this.createProject();
-        final String subdir = "subdir/target";
-        MatcherAssert.assertThat(
-            root.resolve(subdir).toFile().isDirectory(),
-            Matchers.is(true)
-        );
-        new Clean("dr").clean(Paths.get(this.folder.getRoot().toURI()));
-        MatcherAssert.assertThat(
-            root.resolve(subdir).toFile().isDirectory(),
-            Matchers.is(false)
-        );
+    public void canFindAndDeleteMavenTargetInSubdir() {
+        new Check("subdir/target/file2.txt", "subdir/target/simple.txt")
+            .file("subdir/pom.xml")
+            .run();
     }
 
     /**
-     * Delete maven target using yaml configuration.
+     * Delete project dir using yaml configuration.
      */
     @Test
-    public void deleteMavenProjectUsingYamlConfig() {
-        final Path target = this.createMavenAndGetTarget();
-        final Path root = target.getParent();
-        this.writeYml(root, "deletes:\n - target");
-        MatcherAssert.assertThat(
-            target.toFile().isDirectory(),
-            Matchers.is(true)
-        );
-        this.run(Wipe.Type.OT_CLEAN, root);
-        MatcherAssert.assertThat(
-            target.toFile().isDirectory(),
-            Matchers.is(false)
-        );
+    public void deleteProjectUsingYamlConfig() {
+        new Check("some/file.txt", "some/b.txt")
+            .file(".clean.yml", "deletes:\n - some")
+            .run(Wipe.Type.OT_CLEAN);
     }
 
     /**
@@ -140,32 +104,9 @@ public final class CleanTest {
      */
     @Test
     public void defaultGrailsVersionTwo() {
-        final Path root = this.createGrailsVersionTwo();
-        MatcherAssert.assertThat(
-            root.resolve("target").toFile().isDirectory(),
-            Matchers.is(true)
-        );
-        MatcherAssert.assertThat(
-            root.resolve("subdir.log").toFile().exists(),
-            Matchers.is(true)
-        );
-        MatcherAssert.assertThat(
-            root.resolve("subdir/target/some.log").toFile().exists(),
-            Matchers.is(true)
-        );
-        this.run(Wipe.Type.GRAILS_2, root);
-        MatcherAssert.assertThat(
-            root.resolve("target").toFile().isDirectory(),
-            Matchers.is(false)
-        );
-        MatcherAssert.assertThat(
-            root.resolve("subdir.log").toFile().exists(),
-            Matchers.is(false)
-        );
-        MatcherAssert.assertThat(
-            root.resolve("subdir/target/some.log").toFile().exists(),
-            Matchers.is(false)
-        );
+        new Check("target", "subdir.log", "subdir/target/some.log")
+            .file("application.properties", "app.grails.version")
+            .run(Wipe.Type.GRAILS_2);
     }
 
     /**
@@ -173,32 +114,12 @@ public final class CleanTest {
      */
     @Test
     public void defaultGrailsVersionThree() {
-        final Path root = this.createGrailsVersionThree();
-        MatcherAssert.assertThat(
-            root.resolve("build").toFile().isDirectory(),
-            Matchers.is(true)
-        );
-        MatcherAssert.assertThat(
-            root.resolve("subdir.log").toFile().exists(),
-            Matchers.is(true)
-        );
-        MatcherAssert.assertThat(
-            root.resolve("subdir/target/some.log").toFile().exists(),
-            Matchers.is(true)
-        );
-        this.run(Wipe.Type.GRAILS_3, root);
-        MatcherAssert.assertThat(
-            root.resolve("build").toFile().isDirectory(),
-            Matchers.is(false)
-        );
-        MatcherAssert.assertThat(
-            root.resolve("subdir.log").toFile().exists(),
-            Matchers.is(false)
-        );
-        MatcherAssert.assertThat(
-            root.resolve("subdir/target/some.log").toFile().exists(),
-            Matchers.is(false)
-        );
+        new Check("build", "subdir.log", "subdir/target/some.log")
+            .file(
+                "build.gradle",
+                "oiawef\nrsxapply plugin:\"org.grails.grails-web\"vasd"
+            )
+            .run(Wipe.Type.GRAILS_3);
     }
 
     /**
@@ -206,56 +127,19 @@ public final class CleanTest {
      */
     @Test
     public void defaultPlayVersionTwo() {
-        final Path root = this.createPlayVersionTwo();
-        MatcherAssert.assertThat(
-            root.resolve("logs/a.log").toFile().exists(),
-            Matchers.is(true)
-        );
-        MatcherAssert.assertThat(
-            root.resolve("target/a.file").toFile().exists(),
-            Matchers.is(true)
-        );
-        MatcherAssert.assertThat(
-            root.resolve("project/target/a.file").toFile().exists(),
-            Matchers.is(true)
-        );
-        MatcherAssert.assertThat(
-            root.resolve("project/project/target/a.file").toFile().exists(),
-            Matchers.is(true)
-        );
-        MatcherAssert.assertThat(
-            root.resolve(".sbtserver/a.file").toFile().exists(),
-            Matchers.is(true)
-        );
-        MatcherAssert.assertThat(
-            root.resolve("subdir/target/some.log").toFile().exists(),
-            Matchers.is(true)
-        );
-        this.run(Wipe.Type.PLAYFRAMEWORK_2, root);
-        MatcherAssert.assertThat(
-            root.resolve("logs/a.log").toFile().exists(),
-            Matchers.is(false)
-        );
-        MatcherAssert.assertThat(
-            root.resolve("target/a.file").toFile().exists(),
-            Matchers.is(false)
-        );
-        MatcherAssert.assertThat(
-            root.resolve("project/target/a.file").toFile().exists(),
-            Matchers.is(false)
-        );
-        MatcherAssert.assertThat(
-            root.resolve("project/project/target/a.file").toFile().exists(),
-            Matchers.is(false)
-        );
-        MatcherAssert.assertThat(
-            root.resolve(".sbtserver/a.file").toFile().exists(),
-            Matchers.is(false)
-        );
-        MatcherAssert.assertThat(
-            root.resolve("subdir/target/some.log").toFile().exists(),
-            Matchers.is(false)
-        );
+        new Check(
+            "logs/a.log",
+            "target/a.file",
+            "project/target/a.file",
+            "project/project/target/a.file",
+            ".sbtserver/a.file",
+            "subdir.log",
+            "subdir/target/some.log"
+        )
+            .file(
+                "build.sbt",
+                "oiawef\nrsxenablePlugins(PlayJava)web\"vasd"
+            ).run(Wipe.Type.PLAYFRAMEWORK_2);
     }
 
     /**
@@ -263,30 +147,22 @@ public final class CleanTest {
      */
     @Test
     public void cleanupProjectStartingFromDifferentDirectory() {
-        final String one = "one";
-        final String two = "two";
-        final Path root = this.folder.getRoot().toPath();
-        this.tempFile(root.resolve("one/todelete/file1.txt"));
-        this.tempFile(root.resolve("two/file2.txt"));
-        this.writeYml(root.resolve(one), "deletes:\n - todelete");
-        this.writeYml(
-            root.resolve(two),
-            StringUtils.join(
-                "dirs:\n - '",
-                root.resolve(one).toFile().getAbsolutePath(),
-                "'"
+        new Check(
+            "two",
+            false,
+            "../one/todelete"
+        )
+            .file("../one/.clean.yml", "deletes:\n - todelete")
+            .file("file2.txt")
+            .file(
+                ".clean.yml",
+                StringUtils.join(
+                    "dirs:\n - '",
+                    "../one",
+                    "'"
+                )
             )
-        );
-        final Mode mode = new Mode(Mode.Arg.D.getLabel());
-        MatcherAssert.assertThat(
-            root.resolve("one/todelete").toFile().isDirectory(),
-            Matchers.is(true)
-        );
-        new Clean(mode).clean(root.resolve(two));
-        MatcherAssert.assertThat(
-            root.resolve("one/target").toFile().isDirectory(),
-            Matchers.is(false)
-        );
+            .run();
     }
 
     /**
@@ -354,20 +230,9 @@ public final class CleanTest {
         final String pattern,
         final boolean deleted
     ) {
-        final Path root = this.createProject();
-        this.writeYml(
-            root,
-            StringUtils.join("deletes:\n - ", pattern)
-        );
-        MatcherAssert.assertThat(
-            root.resolve(CleanTest.SIMPLE_TXT).toFile().exists(),
-            Matchers.is(true)
-        );
-        this.run(Wipe.Type.OT_CLEAN, root);
-        MatcherAssert.assertThat(
-            root.resolve(CleanTest.SIMPLE_TXT).toFile().exists(),
-            Matchers.is(!deleted)
-        );
+        new Check(!deleted, "subdir/sub/simple.txt")
+            .file(".clean.yml", StringUtils.join("deletes:\n - ", pattern))
+            .run(Wipe.Type.OT_CLEAN);
     }
 
     /**
@@ -379,139 +244,159 @@ public final class CleanTest {
     }
 
     /**
-     * Create yml file.
-     * @param root Directory.
-     * @param content Content.
+     * Class responsible for performing cleanup operation using specific
+     * cleaner. It creates and validates files removal with smart way so it
+     * minimizes number of possible mistakes and makes tests more DRY.
      */
-    private void writeYml(final Path root, final String content) {
-        try {
-            FileUtils.writeStringToFile(
-                root.resolve(".clean.yml").toFile(),
-                content
-            );
-        } catch (final IOException exc) {
-            throw new IllegalStateException("Failed", exc);
+    public final class Check {
+        /**
+         * Working dir.
+         */
+        private final transient Path root;
+
+        /**
+         * List of files to create and check if are deleted.
+         */
+        private final transient String[] files;
+
+        /**
+         * In which state file should be after deletion.
+         */
+        private final transient boolean exists;
+
+        /**
+         * Ctor.
+         * @param cfiles Files.
+         */
+        public Check(final String... cfiles) {
+            this(false, cfiles);
         }
-    }
 
-    /**
-     * Create simple maven repo and get target dir.
-     * @return Target directory.
-     */
-    private Path createMavenAndGetTarget() {
-        return this.createProject().resolve("target");
-    }
+        /**
+         * Ctor.
+         * @param cexists In which state file should be after deletion.
+         * @param cfiles Files.
+         */
+        public Check(
+            final boolean cexists,
+            final String... cfiles
+        ) {
+            this(".", cexists, cfiles);
+        }
 
-    /**
-     * Creates maven project structure.
-     * @return Temp directory of maven project.
-     */
-    private Path createProject() {
-        final Path root = this.folder.getRoot().toPath();
-        this.tempFile(root.resolve("pom.xml"));
-        this.tempFile(root.resolve("target/file.txt"));
-        this.tempFile(root.resolve("target/file2.txt"));
-        this.tempFile(root.resolve("subdir/target/file2.txt"));
-        this.tempFile(root.resolve("subdir/pom.xml"));
-        this.tempFile(root.resolve(CleanTest.SIMPLE_TXT));
-        return root;
-    }
+        /**
+         * Ctor.
+         * @param crelative Relative root directory where execute cleaning.
+         * @param cexists In which state file should be after deletion.
+         * @param cfiles Files.
+         */
+        public Check(
+            final String crelative,
+            final boolean cexists,
+            final String... cfiles
+        ) {
+            this.root = CleanTest.this.folder.getRoot().toPath()
+                .resolve(crelative);
+            this.exists = cexists;
+            this.files = cfiles;
+        }
 
-    /**
-     * Creates grails 2.x project structure.
-     * @return Temp directory of project.
-     */
-    private Path createGrailsVersionTwo() {
-        final Path root = this.folder.getRoot().toPath();
-        this.tempFile(
-            root.resolve("application.properties"),
-            "app.grails.version"
-        );
-        this.tempFile(root.resolve("target/file.txt"));
-        this.tempFile(root.resolve("target/file2.txt"));
-        this.tempFile(root.resolve("subdir.log"));
-        this.tempFile(root.resolve("subdir/target/some.log"));
-        return root;
-    }
-
-    /**
-     * Creates grails 3.x project structure.
-     * @return Temp directory of project.
-     */
-    private Path createGrailsVersionThree() {
-        final Path root = this.folder.getRoot().toPath();
-        this.tempFile(
-            root.resolve("build.gradle"),
-            "oiawef\nrsxapply plugin:\"org.grails.grails-web\"vasd"
-        );
-        this.tempFile(root.resolve("build/file.txt"));
-        this.tempFile(root.resolve("build/file2.txt"));
-        this.tempFile(root.resolve("subdir.log"));
-        this.tempFile(root.resolve("subdir/target/some.log"));
-        return root;
-    }
-
-    /**
-     * Creates playframework 2.x project structure.
-     * @return Temp directory of project.
-     */
-    private Path createPlayVersionTwo() {
-        final Path root = this.folder.getRoot().toPath();
-        this.tempFile(
-            root.resolve("build.sbt"),
-            "oiawef\nrsxenablePlugins(PlayJava)web\"vasd"
-        );
-        this.tempFile(root.resolve("logs/a.log"));
-        this.tempFile(root.resolve("target/a.file"));
-        this.tempFile(root.resolve("project/target/a.file"));
-        this.tempFile(root.resolve("project/project/target/a.file"));
-        this.tempFile(root.resolve(".sbtserver/a.file"));
-        this.tempFile(root.resolve("subdir.log"));
-        this.tempFile(root.resolve("subdir/target/some.log"));
-        return root;
-    }
-
-    /**
-     * Create temporary file with specific content. Skip if file is directory.
-     *
-     * @param path Target path.
-     * @param content File content.
-     */
-    private void tempFile(final Path path, final String content) {
-        try {
-            FileUtils.touch(path.toFile());
-            if (!path.toFile().isDirectory()) {
-                FileUtils.writeStringToFile(path.toFile(), content);
+        /**
+         * Create temporary file with specific content.
+         * Skip if file is directory.
+         * @param relative Relative path.
+         * @param content File content.
+         * @return This.
+         */
+        public Check file(final String relative, final String content) {
+            try {
+                final File target = this.root
+                    .resolve(relative)
+                    .toFile()
+                    .getCanonicalFile();
+                if (!target.exists()) {
+                    FileUtils.forceMkdir(new File(target.getParent()));
+                    FileUtils.writeStringToFile(target, content);
+                    Logger.debug(this, "Created temp file: %s", target);
+                }
+            } catch (final IOException exc) {
+                throw new IllegalStateException(
+                    "Unable to create file",
+                    exc
+                );
             }
-        } catch (final IOException exc) {
-            throw new IllegalStateException(
-                "Unable to create maven project structure",
-                exc
+            return this;
+        }
+
+        /**
+         * Create temporary file with dummy content. Skip if file is directory.
+         *
+         * @param relative Relative path.
+         * @return This.
+         */
+        public Check file(final String relative) {
+            return this.file(relative, "two\nlines");
+        }
+
+        /**
+         * Run cleaning using regular cleaning method.
+         */
+        public void run() {
+            this.exec(() -> new Clean(this.mode()).clean(this.root));
+        }
+
+        /**
+         * Run cleaning mode for specific type.
+         * @param type Type of cleaning.
+         */
+        public void run(final Wipe.Type type) {
+            this.exec(
+                () -> Wipe.DEFAULT
+                    .stream()
+                    .filter(it -> it.match(type))
+                    .findAny()
+                    .get()
+                    .clean(
+                        new Delete(this.mode(), new Summary(this.mode())),
+                        this.root
+                    )
             );
         }
-    }
 
-    /**
-     * Create temporary file with dummy content. Skip if file is directory.
-     *
-     * @param path Target path.
-     */
-    private void tempFile(final Path path) {
-        this.tempFile(path, "two\nlines");
-    }
+        /**
+         * Execute cleaning using specific type. Deleting is done with delete
+         * flag and in verbose mode.
+         *
+         * @param runnable Cleaning operation.
+         */
+        private void exec(final Runnable runnable) {
+            for (final String relative : this.files) {
+                this.file(relative);
+                MatcherAssert.assertThat(
+                    this.root.resolve(relative).toFile().exists(),
+                    Matchers.is(true)
+                );
+            }
+            runnable.run();
+            for (final String relative : this.files) {
+                MatcherAssert.assertThat(
+                    String.format("File should be deleted %s", relative),
+                    this.root.resolve(relative).toFile().exists(),
+                    Matchers.is(this.exists)
+                );
+            }
+        }
 
-    /**
-     * Execute cleaning using specific type and deleting mode.
-     * @param type Definition type.
-     * @param path Path where cleaning should be executed.
-     */
-    private void run(final Wipe.Type type, final Path path) {
-        final Mode mode = new Mode(Mode.Arg.D.getLabel());
-        Wipe.DEFAULT
-            .stream()
-            .filter(it -> it.match(type))
-            .findAny()
-            .get()
-            .clean(new Delete(mode, new Summary(mode)), path);
+        /**
+         * Generate verbose mode using checking arguments.
+         * @return Cleaning mode.
+         */
+        private Mode mode() {
+            Mode mode = new Mode("-vd");
+            if (this.exists) {
+                mode = new Mode("-v");
+            }
+            return mode;
+        }
     }
 }
